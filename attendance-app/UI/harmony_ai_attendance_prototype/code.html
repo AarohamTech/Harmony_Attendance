@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Harmony AI Attendance - Splash</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#525657",
+                    "on-tertiary-container": "#eff1f3",
+                    "tertiary-fixed": "#e0e3e5",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "inverse-primary": "#b4c5ff",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "surface-container-high": "#e7e7f3",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary": "#004ac6",
+                    "tertiary-container": "#6b6e70",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-primary-container": "#eeefff",
+                    "on-secondary-container": "#54647a",
+                    "secondary": "#505f76",
+                    "on-surface-variant": "#434655",
+                    "on-surface": "#191b23",
+                    "surface-tint": "#0053db",
+                    "on-primary-fixed": "#00174b",
+                    "outline-variant": "#c3c6d7",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f3f3fe",
+                    "on-background": "#191b23",
+                    "surface-bright": "#faf8ff",
+                    "surface-dim": "#d9d9e5",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-container": "#ededf9",
+                    "on-tertiary-fixed": "#191c1e",
+                    "secondary-container": "#d0e1fb",
+                    "error": "#ba1a1a",
+                    "primary-container": "#2563eb",
+                    "background": "#faf8ff",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "surface": "#faf8ff",
+                    "inverse-surface": "#2e3039",
+                    "inverse-on-surface": "#f0f0fb",
+                    "primary-fixed": "#dbe1ff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e2ed",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "surface-container-highest": "#e1e2ed",
+                    "outline": "#737686",
+                    "secondary-fixed": "#d3e4fe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "md": "16px",
+                    "gutter": "12px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "edge_margin": "16px",
+                    "xs": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-md-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "title-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "title-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes spin-custom {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-custom {
+            animation: spin-custom 1s linear infinite;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden">
+<!-- Splash Screen Container -->
+<main class="relative h-screen w-full flex flex-col items-center justify-between px-edge_margin py-xl">
+<!-- Top Spacer for Balance -->
+<div class="h-24"></div>
+<!-- Central Content Area -->
+<div class="flex flex-col items-center text-center space-y-lg fade-in">
+<!-- Brand Logo -->
+<div class="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-surface-container-low shadow-sm p-4 flex items-center justify-center transition-transform hover:scale-105 duration-500">
+<img alt="Harmony AI Attendance" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8lLscgNSpjLhj77ZrCtwzrXfQ2XuBxZ2AN4MaXLRMft7DmyzmcWjlxZXksT27xukYvkOsyKN2U05bIU4ZiNEc8kOeOlGIzD7qmmQyf3IqL9nPd7jM99lNBDtFwjCLzzW8ubvVR603DadPNIJH-r-oLgBBXWAkmAW4D-1jeUGtUkpdcPYYFhB4lRKFnjgHXyr_dHQDA9d_ojm-yQujW-caD8TlzfnFwJXgQ_8TMh0a1mY0tgWXGoGh"/>
+</div>
+<!-- Titles & Text -->
+<div class="space-y-xs">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">
+                    Harmony AI Attendance
+                </h1>
+<h2 class="font-title-md text-title-md text-on-surface-variant">
+                    AI Face Recognition Attendance
+                </h2>
+<p class="font-label-md text-label-md text-secondary uppercase tracking-[0.1em] pt-sm">
+                    Smart • Secure • Fast
+                </p>
+</div>
+</div>
+<!-- Loading & Footer Section -->
+<div class="w-full flex flex-col items-center space-y-xl fade-in" style="animation-delay: 0.3s;">
+<!-- Blue Circular Loading Indicator -->
+<div class="relative w-12 h-12">
+<svg class="animate-spin-custom w-full h-full text-primary" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+<path class="opacity-100" d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<!-- Version Footer -->
+<footer class="font-label-sm text-label-sm text-outline">
+                Version v1.0
+            </footer>
+</div>
+</main>
+<!-- Subtle Micro-interaction Scripts -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulated transition effect
+            setTimeout(() => {
+                const elements = document.querySelectorAll('.fade-in');
+                elements.forEach((el, index) => {
+                    el.style.opacity = '1';
+                });
+            }, 100);
+
+            // Subtle background motion interaction (optional refinement)
+            window.addEventListener('mousemove', (e) => {
+                const moveX = (e.clientX - window.innerWidth / 2) / 100;
+                const moveY = (e.clientY - window.innerHeight / 2) / 100;
+                const logoContainer = document.querySelector('.fade-in div');
+                if (logoContainer) {
+                    logoContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                }
+            });
+        });
+    </script>
+</body></html>
