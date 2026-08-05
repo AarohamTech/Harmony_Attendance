@@ -365,9 +365,9 @@ http://127.0.0.1:8002/docs
 Create `.env`
 
 ```
-DATABASE_URL=
+DATABASE_URL=DATABASE_URL=postgresql://postgres:Harmony9757Harmony@db.hgtwhgnschadrwhtimne.supabase.co:5432/postgres
 
-SUPABASE_URL=
+SUPABASE_URL=https://hgtwhgnschadrwhtimne.supabase.co
 
 SUPABASE_KEY=
 
