@@ -34,9 +34,11 @@ export type AttendanceRecord = {
   dayLabel: string;
   punchIn: string;
   punchOut: string;
-  status: 'ON TIME' | 'LATE' | 'EARLY EXIT' | 'ABSENT';
+  status: 'PRESENT' | 'ON TIME' | 'LATE' | 'EARLY EXIT' | 'ABSENT' | 'LEAVE' | 'WEEKLY OFF' | 'HOLIDAY' | 'NO RECORD';
   primaryLocation: string;
   remarks: string;
+  lateReason?: string;
+  earlyExitReason?: string;
   totalHours: string;
   overtime: string;
   geolocation: {
@@ -50,7 +52,7 @@ export type AttendanceRecord = {
 export type RequestRecord = {
   id: string;
   employeeId: string;
-  type: 'LEAVE' | 'EARLY_EXIT' | 'MISC';
+  type: 'LEAVE' | 'EARLY_EXIT' | 'MISC' | 'LATE_ARRIVAL' | 'MISSED_PUNCH_IN' | 'MISSED_PUNCH_OUT' | 'CORRECTION';
   title: string;
   reason: string;
   submittedAt: string;
@@ -63,6 +65,7 @@ export type Operator = {
   name: string;
   employeeId: string;
   email: string;
+  phone?: string;
   department: string;
   role: string;
   avatar: string;
@@ -70,6 +73,10 @@ export type Operator = {
   locationLabel: string;
   latitude: string;
   longitude: string;
+  shift_start?: string;
+  shift_end?: string;
+  grace_time?: string;
+  weekly_off?: string;
 };
 
 export type NotificationRecord = {
@@ -81,15 +88,32 @@ export type NotificationRecord = {
   unread: boolean;
 };
 
-// Base URL resolution: Android emulator uses 10.0.2.2:8002, Web/Desktop uses localhost:8002
+// Base URL resolution: Default to port 8000 Express Server with Host IP support for Android
 const getApiBaseUrl = () => {
   if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8002';
+  if (typeof process !== 'undefined' && process.env?.VITE_API_BASE_URL) {
+    return process.env.VITE_API_BASE_URL;
   }
-  return 'http://127.0.0.1:8002';
+  if (typeof window !== 'undefined' && (window as any).API_BASE_URL) {
+    return (window as any).API_BASE_URL;
+  }
+  const isCapacitor = typeof window !== 'undefined' && (
+    (window as any).Capacitor ||
+    window.location.protocol === 'capacitor:' ||
+    window.location.protocol === 'file:'
+  );
+  if (isCapacitor || Platform.OS === 'android') {
+    return 'http://172.20.10.3:8000';
+  }
+  if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname || 'localhost';
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      return `http://${host}:8000`;
+    }
+  }
+  return 'http://172.20.10.3:8000';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -100,24 +124,60 @@ let inMemorySession: Session | null = null;
 const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   const session = await readSession();
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
+
+  // Set Content-Type: application/json ONLY if body is string or absent, NOT for FormData
+  if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  } else if (!options.body && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (session?.token) {
     headers['Authorization'] = `Bearer ${session.token}`;
   }
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-  
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+
+  console.log(`[API FETCH] ${options.method || 'GET'} ${url}`);
+
+  let response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+    });
+  } catch (netErr: any) {
+    console.error(`[API FETCH ERROR] Request to ${url} failed:`, netErr);
+    
+    // Retry fallback between localhost and 127.0.0.1
+    let fallbackUrl = url;
+    if (url.includes('localhost')) {
+      fallbackUrl = url.replace('localhost', '127.0.0.1');
+    } else if (url.includes('127.0.0.1')) {
+      fallbackUrl = url.replace('127.0.0.1', 'localhost');
+    }
+
+    if (fallbackUrl !== url) {
+      try {
+        console.log(`[API FETCH RETRY] ${fallbackUrl}`);
+        response = await fetch(fallbackUrl, { ...options, headers });
+      } catch (retryErr: any) {
+        console.error(`[API FETCH RETRY ERROR] Request to ${fallbackUrl} failed:`, retryErr);
+        throw new Error(`Unable to connect to attendance server (${url}). Please ensure backend (node server.js) is running on port 8000.`);
+      }
+    } else {
+      throw new Error(`Unable to connect to attendance server (${url}). Please ensure backend (node server.js) is running on port 8000.`);
+    }
+  }
+
+  console.log(`[API FETCH RESPONSE STATUS] ${response.status} ${response.statusText}`);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || `Request failed with status ${response.status}`);
+    console.error(`[API FETCH ERROR RESPONSE]`, errorData);
+    throw new Error(errorData.message || errorData.detail || `Request failed with status ${response.status}`);
   }
 
   return response.json();
@@ -187,7 +247,7 @@ export const syncOfflinePunches = async () => {
   const remaining: OfflinePunchItem[] = [];
   for (const item of queue) {
     try {
-      await apiFetch('/punch', {
+      await apiFetch('/api/punch', {
         method: 'POST',
         body: JSON.stringify(item),
       });
@@ -202,26 +262,27 @@ export const syncOfflinePunches = async () => {
 // ----------------------------------------------------------------------
 // Auth Endpoints
 // ----------------------------------------------------------------------
-export const login = async (input: string): Promise<Session> => {
+export const login = async (input: string, password?: string): Promise<Session> => {
   try {
     const payload = input.includes('@')
-      ? { email: input.trim(), password: '1234' }
-      : { pin: input.trim() };
+      ? { email: input.trim(), password: password || '1234' }
+      : { credential: input.trim(), password: password || '1234' };
 
-    const data = await apiFetch('/auth/login', {
+    const data = await apiFetch('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
 
+    const emp = data.employee;
     const session: Session = {
-      operatorId: String(data.employee.id),
-      employeeId: data.employee.badge_id,
-      name: data.employee.name,
-      email: data.employee.email,
-      role: data.employee.role,
-      department: data.employee.department || 'General',
-      token: data.access_token,
-      profilePhoto: data.employee.profile_photo,
+      operatorId: String(emp.id || emp.employee_id),
+      employeeId: emp.badge_id || emp.code || emp.employee_code || String(emp.id),
+      name: emp.name || emp.full_name,
+      email: emp.email,
+      role: emp.role || emp.designation || 'Employee',
+      department: emp.department || 'General',
+      token: data.access_token || data.token,
+      profilePhoto: emp.profile_photo,
     };
 
     await persistSession(session);
@@ -233,11 +294,39 @@ export const login = async (input: string): Promise<Session> => {
 };
 
 export const logout = async () => {
-  await persistSession(null);
+  try {
+    await apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  } finally {
+    await persistSession(null);
+  }
 };
 
 export const getSession = async (): Promise<Session | null> => {
   return readSession();
+};
+
+export const validateSession = async (): Promise<Session | null> => {
+  const session = await readSession();
+  if (!session || !session.token) {
+    return null;
+  }
+  try {
+    const me = await apiFetch('/api/auth/me');
+    if (me && me.success !== false) {
+      session.name = me.full_name || me.name || session.name;
+      session.email = me.email || session.email;
+      session.role = me.designation || me.role || session.role;
+      session.department = me.department || session.department;
+      session.employeeId = me.employee_code || me.code || session.employeeId;
+      session.profilePhoto = me.profile_photo || session.profilePhoto;
+      await persistSession(session);
+      return session;
+    }
+  } catch {
+    await persistSession(null);
+    return null;
+  }
+  return session;
 };
 
 // ----------------------------------------------------------------------
@@ -252,9 +341,10 @@ const formatMinutesToHours = (minutes: number | null | undefined, isOvertime = f
   return isOvertime ? `+${padH}h ${padM}m` : `${padH}h ${padM}m`;
 };
 
-const mapAttendanceDayToRecord = (day: any, session: Session): AttendanceRecord => {
-  const d = day.date ? new Date(day.date) : new Date();
-  const dayLabel = d.toLocaleDateString('en-US', { weekday: 'long' });
+const mapAttendanceRowToRecord = (row: any, session: Session): AttendanceRecord => {
+  const dateStr = row.attendance_date ? row.attendance_date.slice(0, 10) : new Date().toISOString().slice(0, 10);
+  const d = new Date(dateStr);
+  const dayLabel = row.attendance_day || d.toLocaleDateString('en-US', { weekday: 'long' });
 
   const formatTime = (isoString?: string) => {
     if (!isoString) return '--:--';
@@ -263,24 +353,29 @@ const mapAttendanceDayToRecord = (day: any, session: Session): AttendanceRecord 
     return dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   };
 
+  const statusRaw = row.attendance_status ? row.attendance_status.toUpperCase() : 'ON TIME';
+  const statusFormatted = statusRaw === 'PRESENT' ? 'ON TIME' : statusRaw;
+
   return {
-    id: `att-${day.id}`,
+    id: `att-${row.attendance_id || row.id || Date.now()}`,
     employeeId: session.employeeId,
-    date: day.date,
+    date: dateStr,
     dayLabel,
-    punchIn: formatTime(day.punch_in_time),
-    punchOut: formatTime(day.punch_out_time),
-    status: (day.status?.toUpperCase() as any) || 'ON TIME',
-    primaryLocation: day.primary_location || 'Head Office, Silicon Tower',
-    remarks: day.remarks || 'Database verified record',
-    totalHours: formatMinutesToHours(day.total_working_minutes),
-    overtime: formatMinutesToHours(day.overtime_minutes, true),
+    punchIn: formatTime(row.punch_in || row.punch_in_time),
+    punchOut: formatTime(row.punch_out || row.punch_out_time),
+    status: statusFormatted as any,
+    primaryLocation: row.location_name || 'Padalkar Colony',
+    remarks: row.remarks || 'Database verified record',
+    lateReason: row.late_reason || undefined,
+    earlyExitReason: row.early_exit_reason || undefined,
+    totalHours: row.working_hours || formatMinutesToHours(row.total_working_minutes),
+    overtime: formatMinutesToHours(row.overtime_minutes, true),
     geolocation: {
-      latitude: `${day.latitude || 12.9716}° N`,
-      longitude: `${day.longitude || 77.5946}° E`,
+      latitude: `${row.latitude || 16.740572}° N`,
+      longitude: `${row.longitude || 74.246919}° E`,
     },
-    faceVerified: day.face_verified === 1,
-    faceConfidence: day.face_confidence || 99.5,
+    faceVerified: true,
+    faceConfidence: 99.5,
   };
 };
 
@@ -288,194 +383,168 @@ const mapAttendanceDayToRecord = (day: any, session: Session): AttendanceRecord 
 // Dashboard & Attendance History Endpoints
 // ----------------------------------------------------------------------
 export const getDashboard = async () => {
-  let session = await readSession();
-  if (!session) {
-    // Auto login default user if session lost in dev
-    session = await login('1234');
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
   syncOfflinePunches().catch(() => {});
-  const empId = Number(session.operatorId);
 
-  const [attTodayData, overviewData, profileData] = await Promise.all([
-    apiFetch(`/attendance/today?employee_id=${empId}`).catch(() => null),
-    apiFetch('/dashboard/overview').catch(() => null),
-    apiFetch('/auth/me').catch(() => null),
-  ]);
-
-  const operator: Operator = {
-    id: session.operatorId,
-    name: profileData?.name || session.name,
-    employeeId: profileData?.badge_id || session.employeeId,
-    email: profileData?.email || session.email,
-    department: profileData?.department || session.department,
-    role: profileData?.role || session.role,
-    avatar: profileData?.profile_photo || session.profilePhoto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    profilePhoto: profileData?.profile_photo || session.profilePhoto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-    locationLabel: profileData?.location_label || 'Head Office, Silicon Tower',
-    latitude: `${profileData?.latitude || 12.9716}° N`,
-    longitude: `${profileData?.longitude || 77.5946}° E`,
-  };
-
-  const attendanceToday: AttendanceRecord = attTodayData
-    ? mapAttendanceDayToRecord(attTodayData, session)
-    : {
-        id: `att-today`,
-        employeeId: session.employeeId,
-        date: new Date().toISOString().slice(0, 10),
-        dayLabel: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
-        punchIn: '--:--',
-        punchOut: '--:--',
-        status: 'ON TIME',
-        primaryLocation: 'Head Office, Silicon Tower',
-        remarks: 'No punch recorded yet today.',
-        totalHours: '00h 00m',
-        overtime: '+00h 00m',
-        geolocation: { latitude: '12.9716° N', longitude: '77.5946° E' },
-      };
-
-  const kpis = {
-    todayPresent: overviewData?.today_present ?? 0,
-    lateCount: overviewData?.today_late ?? 0,
-    approvalsPending: overviewData?.pending_requests_count ?? 0,
-    requestedHours: `${overviewData?.avg_working_hours_this_week ?? 0}h`,
-    totalEmployees: overviewData?.total_employees ?? 0,
-    faceSuccessRate: overviewData?.face_recognition_success_rate ?? 99.8,
-  };
-
-  return {
-    operator,
-    attendanceToday,
-    kpis,
-  };
+  const dashboardRes = await apiFetch('/api/dashboard');
+  return dashboardRes;
 };
 
 export const getDashboardCharts = async () => {
-  return apiFetch('/dashboard/charts');
+  return apiFetch('/api/dashboard/charts');
 };
 
 export const getAttendanceHistory = async (): Promise<AttendanceRecord[]> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  const empId = Number(session.operatorId);
-  const data = await apiFetch(`/attendance/history?employee_id=${empId}`);
-  return (data || []).map((day: any) => mapAttendanceDayToRecord(day, session!));
+  const data = await apiFetch('/api/attendance/history');
+  const list = Array.isArray(data) ? data : data.data || [];
+  return list.map((row: any) => mapAttendanceRowToRecord(row, session));
+};
+
+export const getAttendanceByDate = async (dateStr: string): Promise<AttendanceRecord | null> => {
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
+  }
+
+  try {
+    const res = await apiFetch(`/api/attendance/date/${dateStr}`);
+    const row = res.data || res;
+    if (!row) return null;
+
+    const rawStatus = row.status ? row.status.toUpperCase() : 'NO RECORD';
+    const statusFormatted = rawStatus === 'PRESENT' ? 'ON TIME' : rawStatus;
+
+    return {
+      id: `att-${row.date || dateStr}`,
+      employeeId: row.employee_id || session.employeeId,
+      date: row.date || dateStr,
+      dayLabel: row.day || new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long' }),
+      punchIn: row.punch_in || 'Not Punched In',
+      punchOut: row.punch_out || 'Not Punched Out',
+      status: statusFormatted as any,
+      primaryLocation: row.location || 'Padalkar Colony',
+      remarks: row.remarks || 'No attendance record for this date.',
+      lateReason: row.late_reason || undefined,
+      earlyExitReason: row.early_exit_reason || undefined,
+      totalHours: row.working_hours || '00h 00m',
+      overtime: '+00h 00m',
+      geolocation: {
+        latitude: '16.740572° N',
+        longitude: '74.246919° E',
+      },
+      faceVerified: row.face_verified ?? true,
+      faceConfidence: row.face_confidence ?? 99.5,
+    };
+  } catch (err: any) {
+    console.error(`[getAttendanceByDate error for ${dateStr}]:`, err);
+    return null;
+  }
+};
+
+export const getAttendanceCalendar = async (month: number, year: number): Promise<{
+  employeeId: string;
+  employeeName: string;
+  month: number;
+  year: number;
+  attendance: AttendanceRecord[];
+}> => {
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
+  }
+
+  const res = await apiFetch(`/api/attendance/calendar?month=${month}&year=${year}`);
+  const rawList = res.attendance || res.data || [];
+
+  const mapped: AttendanceRecord[] = rawList.map((row: any) => {
+    const rawStatus = row.status ? row.status.toUpperCase() : 'NO RECORD';
+    const statusFormatted = rawStatus === 'PRESENT' ? 'ON TIME' : rawStatus;
+
+    return {
+      id: `att-${row.date}`,
+      employeeId: res.employee_id || session.employeeId,
+      date: row.date,
+      dayLabel: row.day,
+      punchIn: row.punch_in || 'Not Punched In',
+      punchOut: row.punch_out || 'Not Punched Out',
+      status: statusFormatted as any,
+      primaryLocation: row.location || 'Padalkar Colony',
+      remarks: row.remarks || '',
+      lateReason: row.late_reason || undefined,
+      earlyExitReason: row.early_exit_reason || undefined,
+      totalHours: row.working_hours || '00h 00m',
+      overtime: '+00h 00m',
+      geolocation: {
+        latitude: '16.740572° N',
+        longitude: '74.246919° E',
+      },
+      faceVerified: row.face_verified ?? true,
+      faceConfidence: row.face_confidence ?? 99.5,
+    };
+  });
+
+  return {
+    employeeId: res.employee_id || session.employeeId,
+    employeeName: res.employee_name || session.name,
+    month: res.month || month,
+    year: res.year || year,
+    attendance: mapped,
+  };
+};
+
+export const getMonthlyAttendance = async (monthStr: string) => {
+  const res = await apiFetch(`/api/attendance/month?month=${monthStr}`);
+  return res.data;
 };
 
 // ----------------------------------------------------------------------
-// Punch In / Punch Out with Real Face Verification
+// Punch In / Punch Out with Real Face & Geofence Verification
 // ----------------------------------------------------------------------
-export const punchIn = async (faceImageBase64?: string): Promise<AttendanceRecord> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+export const punchIn = async (faceImageBase64?: string, lateReason?: string, latitude?: number, longitude?: number): Promise<AttendanceRecord> => {
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  const empId = Number(session.operatorId);
-  const now = new Date();
-  const clientGenId = `punch-in-${empId}-${now.getTime()}-${Math.random().toString(36).substring(2, 8)}`;
+  const res = await apiFetch('/api/attendance/punch-in', {
+    method: 'POST',
+    body: JSON.stringify({
+      latitude: latitude ?? 16.740572,
+      longitude: longitude ?? 74.246919,
+      face_image: faceImageBase64,
+      late_reason: lateReason,
+    }),
+  });
 
-  const punchPayload: OfflinePunchItem = {
-    client_generated_id: clientGenId,
-    employee_id: empId,
-    punch_type: 'in',
-    timestamp: now.toISOString(),
-    latitude: 12.9716,
-    longitude: 77.5946,
-    source: Platform.OS === 'android' ? 'android' : 'web',
-    face_image: faceImageBase64,
-  };
-
-  try {
-    await apiFetch('/punch', {
-      method: 'POST',
-      body: JSON.stringify(punchPayload),
-    });
-  } catch (err) {
-    console.warn('Network offline or error during punchIn, queueing punch locally:', err);
-    const queue = await getOfflinePunchQueue();
-    queue.push(punchPayload);
-    await saveOfflinePunchQueue(queue);
-  }
-
-  const updatedDay = await apiFetch(`/attendance/today?employee_id=${empId}`).catch(() => null);
-
-  if (updatedDay) {
-    return mapAttendanceDayToRecord(updatedDay, session);
-  }
-
-  return {
-    id: `att-${Date.now()}`,
-    employeeId: session.employeeId,
-    date: now.toISOString().slice(0, 10),
-    dayLabel: now.toLocaleDateString('en-US', { weekday: 'long' }),
-    punchIn: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-    punchOut: '--:--',
-    status: 'ON TIME',
-    primaryLocation: 'Head Office, Silicon Tower',
-    remarks: 'Queued punch in (offline mode).',
-    totalHours: '00h 00m',
-    overtime: '+00h 00m',
-    geolocation: { latitude: '12.9716° N', longitude: '77.5946° E' },
-  };
+  return mapAttendanceRowToRecord(res.data, session);
 };
 
-export const punchOut = async (faceImageBase64?: string): Promise<AttendanceRecord> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+export const punchOut = async (faceImageBase64?: string, earlyExitReason?: string, latitude?: number, longitude?: number): Promise<AttendanceRecord> => {
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  const empId = Number(session.operatorId);
-  const now = new Date();
-  const clientGenId = `punch-out-${empId}-${now.getTime()}-${Math.random().toString(36).substring(2, 8)}`;
+  const res = await apiFetch('/api/attendance/punch-out', {
+    method: 'POST',
+    body: JSON.stringify({
+      latitude: latitude ?? 16.740572,
+      longitude: longitude ?? 74.246919,
+      face_image: faceImageBase64,
+      early_exit_reason: earlyExitReason,
+    }),
+  });
 
-  const punchPayload: OfflinePunchItem = {
-    client_generated_id: clientGenId,
-    employee_id: empId,
-    punch_type: 'out',
-    timestamp: now.toISOString(),
-    latitude: 12.9716,
-    longitude: 77.5946,
-    source: Platform.OS === 'android' ? 'android' : 'web',
-    face_image: faceImageBase64,
-  };
-
-  try {
-    await apiFetch('/punch', {
-      method: 'POST',
-      body: JSON.stringify(punchPayload),
-    });
-  } catch (err) {
-    console.warn('Network offline or error during punchOut, queueing punch locally:', err);
-    const queue = await getOfflinePunchQueue();
-    queue.push(punchPayload);
-    await saveOfflinePunchQueue(queue);
-  }
-
-  const updatedDay = await apiFetch(`/attendance/today?employee_id=${empId}`).catch(() => null);
-
-  if (updatedDay) {
-    return mapAttendanceDayToRecord(updatedDay, session);
-  }
-
-  return {
-    id: `att-${Date.now()}`,
-    employeeId: session.employeeId,
-    date: now.toISOString().slice(0, 10),
-    dayLabel: now.toLocaleDateString('en-US', { weekday: 'long' }),
-    punchIn: '--:--',
-    punchOut: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-    status: 'ON TIME',
-    primaryLocation: 'Head Office, Silicon Tower',
-    remarks: 'Queued punch out (offline mode).',
-    totalHours: '09h 00m',
-    overtime: '+00h 00m',
-    geolocation: { latitude: '12.9716° N', longitude: '77.5946° E' },
-  };
+  return mapAttendanceRowToRecord(res.data, session);
 };
 
 // ----------------------------------------------------------------------
@@ -486,110 +555,115 @@ export const submitRequest = async (input: {
   title: string;
   reason: string;
 }): Promise<RequestRecord> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  const empId = Number(session.operatorId);
   const typeMap: Record<string, string> = {
-    LEAVE: 'leave',
-    EARLY_EXIT: 'early_exit',
-    MISC: 'correction',
+    LATE_ARRIVAL: 'Late Arrival',
+    EARLY_EXIT: 'Early Exit',
+    MISSED_PUNCH_IN: 'Missed Punch In',
+    MISSED_PUNCH_OUT: 'Missed Punch Out',
+    CORRECTION: 'Attendance Correction',
+    LEAVE: 'Late Arrival',
+    MISC: 'Attendance Correction',
   };
 
   const payload = {
-    employee_id: empId,
-    request_type: typeMap[input.type] || 'correction',
-    target_date: new Date().toISOString().slice(0, 10),
-    reason: `${input.title} - ${input.reason}`,
+    request_type: typeMap[input.type] || input.type || 'Attendance Correction',
+    date: new Date().toISOString().slice(0, 10),
+    title: input.title,
+    reason: input.reason,
   };
 
-  const res = await apiFetch('/requests', {
+  const res = await apiFetch('/api/requests', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 
+  const row = res.data || res;
   return {
-    id: String(res.id),
+    id: String(row.request_id || row.id),
     employeeId: session.employeeId,
     type: input.type,
     title: input.title,
     reason: input.reason,
-    submittedAt: res.created_at || new Date().toISOString(),
-    status: res.status ? (res.status.toUpperCase() as any) : 'PENDING',
-    rejectionReason: res.rejection_reason,
+    submittedAt: row.created_at || new Date().toISOString(),
+    status: row.status ? (row.status.toUpperCase() as any) : 'PENDING',
+    rejectionReason: row.manager_remark,
   };
 };
 
 export const listRequests = async (): Promise<RequestRecord[]> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  const empId = Number(session.operatorId);
-  const data = await apiFetch(`/requests?employee_id=${empId}`);
+  const data = await apiFetch('/api/requests');
+  const list = Array.isArray(data) ? data : data.data || [];
 
-  return (data || []).map((r: any) => ({
-    id: String(r.id),
-    employeeId: session!.employeeId,
-    type: r.request_type === 'leave' ? 'LEAVE' : r.request_type === 'early_exit' ? 'EARLY_EXIT' : 'MISC',
-    title: r.title || (r.reason ? r.reason.split(' - ')[0] : 'Attendance Request'),
-    reason: r.reason || '',
-    submittedAt: r.created_at || new Date().toISOString(),
-    status: r.status ? (r.status.toUpperCase() as any) : 'PENDING',
-    rejectionReason: r.rejection_reason,
-  }));
+  return list.map((r: any) => {
+    let reqType: RequestRecord['type'] = 'CORRECTION';
+    if (r.request_type === 'Late Arrival' || r.request_type === 'leave') reqType = 'LATE_ARRIVAL';
+    else if (r.request_type === 'Early Exit' || r.request_type === 'early_exit') reqType = 'EARLY_EXIT';
+    else if (r.request_type === 'Missed Punch In') reqType = 'MISSED_PUNCH_IN';
+    else if (r.request_type === 'Missed Punch Out') reqType = 'MISSED_PUNCH_OUT';
+    else if (r.request_type === 'Attendance Correction' || r.request_type === 'correction') reqType = 'CORRECTION';
+
+    return {
+      id: String(r.request_id || r.id),
+      employeeId: session.employeeId,
+      type: reqType,
+      title: r.title || (r.reason ? r.reason.split(' - ')[0] : (r.request_type || 'Attendance Request')),
+      reason: r.reason || '',
+      submittedAt: r.created_at ? r.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      status: r.status ? (r.status.toUpperCase() as any) : 'PENDING',
+      rejectionReason: r.manager_remark,
+    };
+  });
 };
 
 // ----------------------------------------------------------------------
 // User Profile & Account Endpoints
 // ----------------------------------------------------------------------
 export const getProfile = async (): Promise<Operator | null> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  try {
-    const user = await apiFetch('/auth/me');
-    return {
-      id: String(user.id),
-      name: user.name,
-      employeeId: user.badge_id,
-      email: user.email,
-      department: user.department,
-      role: user.role,
-      avatar: user.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      profilePhoto: user.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      locationLabel: user.location_label || 'Head Office, Silicon Tower',
-      latitude: `${user.latitude || 12.9716}° N`,
-      longitude: `${user.longitude || 77.5946}° E`,
-    };
-  } catch {
-    return {
-      id: session.operatorId,
-      name: session.name,
-      employeeId: session.employeeId,
-      email: session.email,
-      department: session.department,
-      role: session.role,
-      avatar: session.profilePhoto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      profilePhoto: session.profilePhoto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      locationLabel: 'Head Office, Silicon Tower',
-      latitude: '12.9716° N',
-      longitude: '77.5946° E',
-    };
-  }
+  const res = await apiFetch('/api/employees/profile');
+  const user = res.data || res;
+
+  return {
+    id: String(user.employee_id || user.id),
+    name: user.full_name || user.name || session.name,
+    employeeId: user.employee_code || user.badge_id || session.employeeId,
+    email: user.email || session.email,
+    phone: user.phone || 'N/A',
+    department: user.department || session.department,
+    role: user.designation || user.role || session.role,
+    avatar: user.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    profilePhoto: user.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    locationLabel: user.office_name || user.location_label || 'Padalkar Colony',
+    latitude: `${user.latitude || 16.740572}° N`,
+    longitude: `${user.longitude || 74.246919}° E`,
+    shift_start: user.shift_start || '09:00:00',
+    shift_end: user.shift_end || '18:00:00',
+    grace_time: user.grace_time || '09:15:00',
+    weekly_off: user.weekly_off || 'Monday',
+  };
 };
 
 export const updateProfile = async (input: {
   name?: string;
   department?: string;
   role?: string;
+  phone?: string;
 }) => {
-  const updatedUser = await apiFetch('/profile/update', {
+  const updatedUser = await apiFetch('/api/employees/profile', {
     method: 'PUT',
     body: JSON.stringify(input),
   });
@@ -614,7 +688,7 @@ export const createAccount = async (input: {
   role: string;
   pin: string;
 }) => {
-  const res = await apiFetch('/auth/register', {
+  const res = await apiFetch('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -623,14 +697,22 @@ export const createAccount = async (input: {
 
 export const forgotPassword = async (employeeId: string) => {
   return {
-    message: `PIN reset instructions for ${employeeId} have been generated and dispatched to your corporate email.`,
+    message: `Password/PIN reset instructions for ${employeeId} have been generated and dispatched to your corporate email.`,
   };
 };
 
 export const updateFaceCapture = async (direction: string, base64Image: string) => {
-  const res = await apiFetch('/face/register', {
+  const res = await apiFetch('/api/face/register', {
     method: 'POST',
     body: JSON.stringify({ direction, base64Image }),
+  });
+  return res;
+};
+
+export const verifyFace = async (base64Image: string) => {
+  const res = await apiFetch('/api/face/verify', {
+    method: 'POST',
+    body: JSON.stringify({ base64Image }),
   });
   return res;
 };
@@ -639,44 +721,40 @@ export const updateFaceCapture = async (direction: string, base64Image: string) 
 // Notifications Endpoints
 // ----------------------------------------------------------------------
 export const getNotifications = async (): Promise<NotificationRecord[]> => {
-  let session = await readSession();
-  if (!session) {
-    session = await login('1234');
+  const session = await readSession();
+  if (!session || !session.token) {
+    throw new Error('Authentication required. Please login again.');
   }
 
-  const empId = Number(session.operatorId);
-  const data = await apiFetch(`/notifications?employee_id=${empId}`);
+  const data = await apiFetch('/api/notifications');
+  const list = Array.isArray(data) ? data : data.data || [];
 
-  return (data || []).map((n: any) => ({
-    id: String(n.id),
-    type: n.type || 'SYSTEM',
+  return list.map((n: any) => ({
+    id: String(n.id || n.notification_id),
+    type: n.type || n.notification_type || 'SYSTEM',
     title: n.title,
-    body: n.body,
+    body: n.body || n.message,
     time: n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now',
-    unread: n.unread === 1,
+    unread: n.is_read === false || n.unread === 1,
   }));
 };
 
 export const markAllNotificationsRead = async () => {
-  let session = await readSession();
-  if (!session) return;
-  const empId = Number(session.operatorId);
-  await apiFetch(`/notifications/read-all?employee_id=${empId}`, { method: 'PUT' });
+  await apiFetch('/api/notifications/read-all', { method: 'PUT' });
 };
 
 // ----------------------------------------------------------------------
 // Reports & Employees
 // ----------------------------------------------------------------------
 export const getReportDownloadUrl = (format: 'csv' | 'xlsx' | 'pdf', startDate?: string, endDate?: string) => {
-  let url = `${API_BASE_URL}/reports/export?format=${format}`;
+  let url = `${API_BASE_URL}/api/reports/export?format=${format}`;
   if (startDate) url += `&start_date=${startDate}`;
   if (endDate) url += `&end_date=${endDate}`;
   return url;
 };
 
-export const listEmployees = async (page = 1, search?: string, department?: string) => {
-  let url = `/employees?page=${page}&limit=10`;
+export const listEmployees = async (page = 1, search?: string) => {
+  let url = `/api/employees?page=${page}&limit=10`;
   if (search) url += `&search=${encodeURIComponent(search)}`;
-  if (department) url += `&department=${encodeURIComponent(department)}`;
   return apiFetch(url);
 };

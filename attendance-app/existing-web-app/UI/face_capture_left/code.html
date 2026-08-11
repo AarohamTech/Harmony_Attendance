@@ -1,0 +1,252 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Face Capture Progress - HRMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c3c6d7",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#191c1e",
+                        "surface-container-low": "#f3f3fe",
+                        "on-surface-variant": "#434655",
+                        "tertiary-fixed": "#e0e3e5",
+                        "surface-bright": "#faf8ff",
+                        "on-surface": "#191b23",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#00174b",
+                        "secondary": "#505f76",
+                        "inverse-surface": "#2e3039",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-container": "#eeefff",
+                        "outline": "#737686",
+                        "secondary-container": "#d0e1fb",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#525657",
+                        "inverse-on-surface": "#f0f0fb",
+                        "surface-variant": "#e1e2ed",
+                        "on-background": "#191b23",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-tertiary-container": "#eff1f3",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-dim": "#d9d9e5",
+                        "primary": "#004ac6",
+                        "primary-container": "#2563eb",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-container-high": "#e7e7f3",
+                        "surface-tint": "#0053db",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-container-highest": "#e1e2ed",
+                        "surface": "#faf8ff",
+                        "on-secondary-container": "#54647a",
+                        "tertiary-container": "#6b6e70",
+                        "background": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#ededf9",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#c4c7c9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "margin-mobile": "16px",
+                        "gutter-mobile": "12px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .camera-overlay {
+            mask-image: radial-gradient(circle 140px at 50% 45%, transparent 99%, black 100%);
+            -webkit-mask-image: radial-gradient(circle 140px at 50% 45%, transparent 99%, black 100%);
+        }
+        .guide-ring {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #2563eb;
+            animation: rotate 3s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface flex items-center h-16 px-margin-mobile w-full">
+<button class="mr-4 p-2 rounded-full hover:bg-surface-container transition-colors duration-200">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-title-lg text-title-lg text-primary">Enrollment</h1>
+</header>
+<!-- Content Canvas -->
+<main class="flex-1 pt-16 pb-24 px-margin-mobile flex flex-col max-w-md mx-auto w-full">
+<!-- Progress Indicator Section -->
+<section class="mt-lg">
+<div class="flex justify-between items-end mb-sm">
+<span class="font-label-lg text-label-lg text-on-surface-variant tracking-wider">STEP 2 OF 5</span>
+<span class="font-label-lg text-label-lg text-primary font-bold">20% COMPLETE</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[20%] transition-all duration-700 ease-out"></div>
+</div>
+</section>
+<!-- Status Chips / Steps Horizontal Scroll -->
+<section class="mt-md flex gap-sm overflow-x-auto no-scrollbar py-1">
+<div class="flex items-center gap-xs bg-secondary-container px-3 py-1.5 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-[16px] text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md text-on-secondary-container">Front View</span>
+</div>
+<div class="flex items-center gap-xs bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-md text-label-md text-primary font-semibold">Left Profile</span>
+</div>
+<div class="flex items-center gap-xs bg-surface-container px-3 py-1.5 rounded-full border border-outline-variant/30">
+<span class="font-label-md text-label-md text-on-surface-variant">Right Profile</span>
+</div>
+</section>
+<!-- Instruction Area -->
+<section class="mt-lg text-center">
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Position your face</h2>
+<p class="font-body-md text-body-md text-on-surface-variant pulse-soft">Turn your face slightly left (30°)</p>
+</section>
+<!-- Camera Preview Container -->
+<section class="mt-lg relative flex-1 min-h-[340px] rounded-[32px] overflow-hidden shadow-sm bg-inverse-surface group">
+<!-- Simulated Camera Feed -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A close-up, high-quality portrait of a professional individual looking slightly to the left, captured in a clean office environment with soft, bright daylight. The scene is framed as a biometric authentication interface, featuring a light-mode color palette with primary blue accents. The lighting is even and professional, emphasizing clarity and corporate security standards." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkcGN1_uZxrsklu1VqfVQsZuu5gAU5zXucsgjhJpWyqWX2cnj0aJXmam2ytXj3c54HWkNL8LtDkfOo2TcBTCvGyMI1h7PTnE4vB3yYH0Buep6p2aMZk91eptgD6rew1ZwLWX2moe4MqdaUo7MUnDCKKoUglnl3-jqdv6fJJ_q3hcAzEHhP7zE_SS8q_UiOzj7TC2qs4pczNBlQvFUZAzCxIo-Dg8Q8eFyfHyRbLaqi9nyFZyTkuQIZ')">
+</div>
+<!-- Dark Mask with cutout -->
+<div class="absolute inset-0 bg-black/40 camera-overlay"></div>
+<!-- Focus Guide Ring -->
+<div class="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full guide-ring pointer-events-none" style="border-color: rgba(255, 255, 255, 0.3);"></div>
+<!-- Orientation Helper Graphics -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center">
+<!-- Left turn arrow indicator -->
+<div class="mr-[180px] opacity-80 animate-bounce-horizontal">
+<span class="material-symbols-outlined text-white text-[48px]">arrow_back</span>
+</div>
+</div>
+<!-- Corner Accents -->
+<div class="absolute top-8 left-8 w-8 h-8 border-t-2 border-l-2 border-primary-fixed rounded-tl-lg"></div>
+<div class="absolute top-8 right-8 w-8 h-8 border-t-2 border-r-2 border-primary-fixed rounded-tr-lg"></div>
+<div class="absolute bottom-8 left-8 w-8 h-8 border-b-2 border-l-2 border-primary-fixed rounded-bl-lg"></div>
+<div class="absolute bottom-8 right-8 w-8 h-8 border-b-2 border-r-2 border-primary-fixed rounded-br-lg"></div>
+<!-- Bottom Tooltip in Preview -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-on-surface/80 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-white text-[18px]">light_mode</span>
+<span class="text-white font-label-md text-label-md">Good Lighting</span>
+</div>
+</section>
+<!-- Action Button -->
+<section class="mt-xl mb-lg">
+<button class="w-full bg-primary-container text-on-primary-container h-14 rounded-xl font-title-lg text-title-lg shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+                Capture Left Profile
+            </button>
+<p class="text-center font-label-md text-label-md text-on-surface-variant mt-sm px-lg">Ensure your eyes are visible and look directly into the guide.</p>
+</section>
+</main>
+<!-- Bottom Nav Bar (Suppressed on Task-Focused screen but placeholder logic kept for context if needed elsewhere) -->
+<!-- Not visible as per Shell Visibility rules: "Task-Focused: Any sub-page featuring a 'Back' action" -->
+<style>
+        @keyframes bounce-horizontal {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-10px); }
+        }
+        .animate-bounce-horizontal {
+            animation: bounce-horizontal 1.5s infinite ease-in-out;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script>
+        // Micro-interaction for the capture button
+        const captureBtn = document.querySelector('button.bg-primary-container');
+        captureBtn.addEventListener('click', () => {
+            captureBtn.innerHTML = `
+                <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span class="ml-2">Processing...</span>
+            `;
+            captureBtn.classList.add('opacity-80', 'pointer-events-none');
+            
+            // Simulating a successful capture transition
+            setTimeout(() => {
+                window.location.reload(); // In a real app, this would route to next step
+            }, 1500);
+        });
+
+        // Simulating some dynamic camera focal pulse
+        const guideRing = document.querySelector('.guide-ring');
+        setInterval(() => {
+            guideRing.style.borderColor = 'rgba(37, 99, 235, 0.6)';
+            setTimeout(() => {
+                guideRing.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            }, 1000);
+        }, 2000);
+    </script>
+</body></html>

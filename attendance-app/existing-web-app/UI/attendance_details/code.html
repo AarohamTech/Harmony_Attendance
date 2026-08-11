@@ -1,0 +1,309 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Attendance Details - Harmony AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .bento-item-large {
+            grid-column: span 2;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#525657",
+                        "on-tertiary-container": "#eff1f3",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-high": "#e7e7f3",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "tertiary-container": "#6b6e70",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-container": "#eeefff",
+                        "on-secondary-container": "#54647a",
+                        "secondary": "#505f76",
+                        "on-surface-variant": "#434655",
+                        "on-surface": "#191b23",
+                        "surface-tint": "#0053db",
+                        "on-primary-fixed": "#00174b",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f3fe",
+                        "on-background": "#191b23",
+                        "surface-bright": "#faf8ff",
+                        "surface-dim": "#d9d9e5",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container": "#ededf9",
+                        "on-tertiary-fixed": "#191c1e",
+                        "secondary-container": "#d0e1fb",
+                        "error": "#ba1a1a",
+                        "primary-container": "#2563eb",
+                        "background": "#faf8ff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#faf8ff",
+                        "inverse-surface": "#2e3039",
+                        "inverse-on-surface": "#f0f0fb",
+                        "primary-fixed": "#dbe1ff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e2ed",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-container-highest": "#e1e2ed",
+                        "outline": "#737686",
+                        "secondary-fixed": "#d3e4fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "md": "16px",
+                        "gutter": "12px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "edge_margin": "16px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 z-40 sticky">
+<div class="flex justify-between items-center w-full px-md h-14">
+<div class="flex items-center gap-3">
+<button class="hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed">Attendance Details</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">notifications</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a corporate employee for a profile photo. The lighting is soft and flattering with a clean, neutral gray background. The subject wears modern business-casual attire in a high-quality light-mode UI aesthetic. The overall mood is approachable, trustworthy, and efficient, reflecting a high-performance HR management environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCG_xIIiXO7Jpt-PKiay5oiByR6-N8_BFR2QQZX4-EOFZ0MfpojvB_nSe_yAdX9cmbw4XpsTbIpFbb3Yy266bGGL-42MQWNcn_nZkUzuAfEc12OjUJs0PIBpgqU0ypaKPS_u45DXqyc6xNAP4CyRMAKUUfwMXVVwcqe1a12YMbXwVEuCiRVMe4DqkTcLW_OauRXOItnAdkhlov9o3CBltEsapv2bnaI2D5crPaBQgUPyj6zf6gvjO2V">
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 px-edge_margin py-md pb-24 overflow-y-auto">
+<!-- Profile Header Section -->
+<div class="mb-gutter flex items-center gap-4 bg-surface p-4 rounded-xl border border-outline-variant shadow-sm">
+<div class="w-14 h-14 rounded-full border-2 border-primary-container p-0.5 overflow-hidden">
+<img class="w-full h-full rounded-full object-cover" data-alt="A high-resolution professional profile picture of a young male professional with a confident smile. The environment is a bright, modern office with soft daylight filtering through. The style is clean and corporate, featuring a sophisticated color palette of whites and primary blues to match a premium enterprise software interface. The focus is sharp on the subject, creating a human-centric enterprise feeling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSqfUuT7fbL7s8uyyqv8-BUnV6GYS2CuqpCJqFUplmBiwfX6XLsQfKzopg8VK1FyN-Bsw5miWPabADwi7-6hvQMmnDAeJunFc323YhtTVrpR-YPuTdBN7sbkJoAEc1Y-MJqA40-HxyNuK1leOoAtL1SFrSmE9exPV_qeR7YpAcuB6zjrUtPmgVp8OcrB5ZQcgxHLOvdYU0_uPii3xNqZM1vNNocMoEf3T31CXip0LktZOnSnhOzamc">
+</div>
+<div>
+<h2 class="font-headline-md-mobile text-headline-md-mobile text-on-surface">Alex Thompson</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full">ID: EMP-88210</span>
+<span class="font-label-md text-label-md text-secondary">UX Department</span>
+</div>
+</div>
+</div>
+<!-- Date & Status Bento Card -->
+<div class="bento-grid mb-gutter">
+<div class="bento-item-large glass-card rounded-xl p-md flex justify-between items-center">
+<div>
+<p class="font-label-md text-label-md text-secondary uppercase tracking-wider">Date &amp; Day</p>
+<p class="font-title-lg text-title-lg mt-1">Oct 24, 2023 <span class="text-secondary font-normal ml-1">· Tuesday</span></p>
+</div>
+<div class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md font-bold">ON TIME</span>
+</div>
+</div>
+<!-- Punch In Card -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[48px]">login</span>
+</div>
+<p class="font-label-md text-label-md text-secondary">Punch In</p>
+<p class="font-display-lg text-display-lg text-primary mt-2">08:52</p>
+<p class="font-label-sm text-label-sm text-tertiary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> Standard: 09:00
+                </p>
+</div>
+<!-- Punch Out Card -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[48px]">logout</span>
+</div>
+<p class="font-label-md text-label-md text-secondary">Punch Out</p>
+<p class="font-display-lg text-display-lg text-secondary mt-2">18:05</p>
+<p class="font-label-sm text-label-sm text-tertiary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> Standard: 18:00
+                </p>
+</div>
+<!-- Working Hours Bento Item -->
+<div class="bento-item-large bg-primary-container text-on-primary-container rounded-xl p-md shadow-md">
+<div class="flex justify-between items-center">
+<div>
+<p class="font-label-md text-label-md text-blue-100 opacity-90">Total Working Hours</p>
+<h3 class="font-display-lg text-display-lg mt-1">09h 13m</h3>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-blue-100 opacity-90">Overtime</p>
+<p class="font-title-lg text-title-lg text-white">+00h 13m</p>
+</div>
+</div>
+<!-- Mini Progress Bar -->
+<div class="w-full bg-white/20 h-2 rounded-full mt-4 overflow-hidden">
+<div class="bg-white h-full" style="width: 95%;"></div>
+</div>
+</div>
+</div>
+<!-- Location Details Section -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md mb-gutter shadow-sm">
+<h4 class="font-title-lg text-title-lg mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span> Geolocation Details
+            </h4>
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md text-secondary">Primary Location</p>
+<p class="font-body-md text-body-md font-semibold">Head Office, Silicon Tower</p>
+<p class="font-body-sm text-body-sm text-tertiary">4th Floor, Sector 62, Innovation Park</p>
+</div>
+<button class="text-primary font-label-md text-label-md flex items-center gap-1 border border-primary/20 rounded-lg px-3 py-1 hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-[16px]">map</span> View Map
+                    </button>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+<div>
+<p class="font-label-md text-label-md text-secondary">Latitude</p>
+<code class="font-body-sm text-body-sm bg-surface-container px-2 py-1 rounded">37.7749° N</code>
+</div>
+<div>
+<p class="font-label-md text-label-md text-secondary">Longitude</p>
+<code class="font-body-sm text-body-sm bg-surface-container px-2 py-1 rounded">122.4194° W</code>
+</div>
+</div>
+<!-- Static Map Preview Placeholder -->
+<div class="w-full h-32 rounded-lg mt-2 overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist 3D map representation showing a corporate office location pin. The map style is stylized with a light, airy color scheme featuring whites, light blues, and soft grays, matching a high-end enterprise software UI. The perspective is a 45-degree isometric view with soft shadows and clear typography for street names." data-location="San Francisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_sr2MDSNqte7Rw9SPi7NEYR4vjBtlzCEXWeYNfF7SXr5sAkOisGmAUrK9ItwG-Ai7MkL5sO9odt7ZqC8mQwdLvM7AP6BZwe3hXKJndGl7uQKwsxvfgXq_T9e4EgbbHBKfMgb0IklyZfNlrv5_DM8Y06XUy1pKgTINx8g2X9KpUEQMAEPDwG200MXP95L2J4k2grXaamnf-xm-cfGrjs91cTmEAczrTzAA8SM_gn3hwZFtUPOwAeTU">
+</div>
+</div>
+</div>
+<!-- Remarks Section -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md shadow-sm">
+<h4 class="font-title-lg text-title-lg mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">comment</span> Remarks
+            </h4>
+<div class="p-3 bg-surface-container rounded-lg italic">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    "Completed the final review for the Project Aurora wireframes. Clocked out slightly late due to the sprint planning sync meeting."
+                </p>
+</div>
+<div class="mt-4 flex justify-end">
+<button class="font-label-md text-label-md text-primary flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-[16px]">edit</span> Edit Remarks
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface dark:bg-surface-container shadow-[0_-2px_4px_rgba(0,0,0,0.04)] h-16 pb-safe px-sm flex justify-around items-center">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Attendance (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="fingerprint" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</a>
+<!-- Requests -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="quick_reference_all">quick_reference_all</span>
+<span class="font-label-sm text-label-sm">Requests</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('.bg-surface').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+                card.style.transition = 'transform 0.1s ease';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Initialize Material Symbols
+        document.querySelectorAll('[data-icon]').forEach(iconEl => {
+            const iconName = iconEl.getAttribute('data-icon');
+            if (iconName && !iconEl.classList.contains('material-symbols-outlined')) {
+                iconEl.classList.add('material-symbols-outlined');
+                iconEl.textContent = iconName;
+            }
+        });
+    </script>
+</body></html>

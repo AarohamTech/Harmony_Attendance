@@ -1,0 +1,14 @@
+module.exports = {
+  appId: 'com.harmony.aiattendance',
+  appName: 'Harmony AI Attendance',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https',
+    cleartext: true
+  },
+  plugins: {
+    Camera: {
+      permissions: ['camera', 'photos']
+    }
+  }
+};

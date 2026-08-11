@@ -1,0 +1,270 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Face Registration Complete</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#c3c6d7",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#191c1e",
+                    "surface-container-low": "#f3f3fe",
+                    "on-surface-variant": "#434655",
+                    "tertiary-fixed": "#e0e3e5",
+                    "surface-bright": "#faf8ff",
+                    "on-surface": "#191b23",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed": "#00174b",
+                    "secondary": "#505f76",
+                    "inverse-surface": "#2e3039",
+                    "on-error": "#ffffff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary-container": "#eeefff",
+                    "outline": "#737686",
+                    "secondary-container": "#d0e1fb",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#525657",
+                    "inverse-on-surface": "#f0f0fb",
+                    "surface-variant": "#e1e2ed",
+                    "on-background": "#191b23",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-tertiary-container": "#eff1f3",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "surface-dim": "#d9d9e5",
+                    "primary": "#004ac6",
+                    "primary-container": "#2563eb",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "inverse-primary": "#b4c5ff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "surface-container-high": "#e7e7f3",
+                    "surface-tint": "#0053db",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-secondary-fixed": "#0b1c30",
+                    "surface-container-highest": "#e1e2ed",
+                    "surface": "#faf8ff",
+                    "on-secondary-container": "#54647a",
+                    "tertiary-container": "#6b6e70",
+                    "background": "#faf8ff",
+                    "error-container": "#ffdad6",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#ededf9",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed-dim": "#c4c7c9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "margin-mobile": "16px",
+                    "gutter-mobile": "12px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-lg": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .loading-ring {
+            border: 3px solid rgba(37, 99, 235, 0.1);
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface flex items-center h-16 px-margin-mobile w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">arrow_back</span>
+<h1 class="font-title-lg text-title-lg text-primary">Enrollment</h1>
+</div>
+</header>
+<main class="pt-20 pb-24 px-margin-mobile min-h-screen max-w-md mx-auto">
+<!-- Progress Header Section -->
+<section class="mb-lg">
+<div class="flex justify-between items-end mb-sm">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs">Scan Complete</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Your biometric data has been captured.</p>
+</div>
+<div class="text-right">
+<span class="font-display-lg text-display-lg text-primary">100%</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-full transition-all duration-1000 ease-out"></div>
+</div>
+</section>
+<!-- Profile Generation Status Card -->
+<div class="bg-primary text-on-primary rounded-xl p-md shadow-sm mb-lg relative overflow-hidden">
+<div class="relative z-10 flex items-center gap-md">
+<div class="loading-ring border-on-primary/20 border-top-on-primary"></div>
+<div>
+<p class="font-title-lg text-title-lg">Generating secure face profile...</p>
+<p class="font-label-lg text-label-lg opacity-80">Encryption in progress</p>
+</div>
+</div>
+<!-- Atmospheric shimmer effect -->
+<div class="absolute inset-0 shimmer opacity-10"></div>
+</div>
+<!-- Capture Checklist Grid (Bento Style) -->
+<section class="grid grid-cols-2 gap-sm mb-lg">
+<div class="col-span-2 bg-surface-container-low p-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-body-lg text-body-lg font-medium">Frontal View</span>
+</div>
+<div class="w-12 h-12 rounded-lg overflow-hidden bg-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up biometric portrait of a person's face from a direct frontal angle. The lighting is clinical and bright, creating a clean white high-trust environment. The style is modern corporate, emphasizing security and clarity with soft shadows and sharp focus on facial features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCVkCBfZur0X9-6FRox568jxZkDYts3ePecxq-joU_bslsAIOHaODVbNJX-Syn0u6boykRs21Ow1cTdPbZdA5-m59F26I75S4wLbgbxqbFTUCD9Y9AkBv3vYHk4B_Pf9A6fwvePMVdJHXlC_kaaTeJxyFR9dh6goXdZcGzwFCLCuO_xx-y8D_Rc-ZOxHFkzMWayQbZ8FHiK8Y5jPVxg_WMNcFHoGUejPiiY1cI07YoxHE1bDfKsUam">
+</div>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A profile view biometric photograph of a person's face from the left side. The image is high-definition with neutral lighting, set against a minimalist clean white background. It represents professional identity verification in a corporate HRMS context, with cool blue-tinted highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSbyKVljZwSw_hX5pdRrlM_W_PGJTivQgezI2TvMbLLIHEzYbuBQDX42WsvzhXzMur5FTptm9e24iXrQiAbw3kX_Sgyo2pcap9NHR4NpJQ-2fGdwRkYhcTfyF-sBDCtgU7MRkJoyG_UaKKKcpOn1G6LTZihSJIQ7LLfd1ptPBHNOuhUy2Q6Y-T7P1YNczhvffJmVHdCzox42rLM_Ppyux2wqMfWN7UC7CmtLFXu2vqHNnXUjxV-w9u">
+</div>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant block">Left Profile</span>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A profile view biometric photograph of a person's face from the right side. The setting is a brightly lit modern office environment with a professional, high-security feel. The color palette is dominated by whites and soft grays, matching an enterprise software aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZnAOE8IPDI4TnqpNNIMuB2f2_rfiMMchYCg4hXiv3xl-yMGeSUvYJ2anBvFarsqpoq9M52F0WGXPHS1TnyfPPaOr46_EpRL0Tz9xoLkTrqRuFHKLdkZcoKXjeUeFG1guKfAT3H3ymGL_drZvtXGq-LW_EtGFjQ3xVWq7V1_AMaFSu0oXqJVvt4yvlCzcVOnbt7ePMeT5vWfhdHEQ9Kf1aVvVId7tW4oo5U7Nt9RE1INhFQ2F6V8vU">
+</div>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant block">Right Profile</span>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A biometric photograph of a person looking slightly upwards, capturing a high facial angle. The image is sharp and clear with high-key lighting, maintaining the clean professional look of an enterprise identity system. Soft ambient blue glows suggest technology and security." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5Hex9-PaoRw3LzVKr3HUpQdMIydrBaG4RBs6i1FQCJsxtqXhQDbeYH505GEgELKsbGL2j8auzaaRz9j7yQfcrJMuvYptb1h8YLunc7gLr6eKWPFgShUuX6UyoO8t9snABuilJCTJgHobxXFARbCQYc9WW5tYnQ_2KCoixTxx7TpHklYfphGIkiU9sTajbciSiUK_4-LQWVPmxyncVDjmUxQMmGobY8Tjq78a6bRcq6ycgau3DkFJI">
+</div>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant block">Tilt Up</span>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="w-8 h-8 rounded-lg overflow-hidden bg-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A biometric photograph of a person looking slightly downwards, capturing a low facial angle. The visual style is consistent with high-trust Material Design 3 guidelines, featuring a bright background and a professional, secure atmosphere typical of financial or HR applications." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE9xYdXI84vPzdMI3FLXd-eo5XqO8xxT6y1hqoNDNL-676vPLA-csBM7vDbNrFUTz3GJiCoFCN_YVhLWUTKoMF-M5GSI9dPnveUxSciFe9aKxje7NDkGMR7bANVYzs1fSbXeZm56wh4KsWT_FmUUaz2XbNXTclXp7CbL9Bc3k7KcNKr_mWGc7uXiKwZKufjcwb4jyiN65DVKYBuoA3AasJDjKjm7j0m845StsFzskANoXSQElcVRXd">
+</div>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant block">Tilt Down</span>
+</div>
+</section>
+<!-- Security Badge -->
+<div class="flex items-center justify-center gap-xs text-on-surface-variant mb-xl">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">Military-Grade Encryption Active</span>
+</div>
+<!-- Action Button (Disabled until processing is done) -->
+<button class="w-full bg-primary-container text-on-primary-container font-title-lg text-title-lg py-md rounded-xl shadow-sm flex items-center justify-center gap-md opacity-50 cursor-not-allowed">
+<span>Finishing...</span>
+</button>
+</main>
+<!-- Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-container shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] flex justify-around items-center h-20 px-2 pb-safe w-full">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">face</span>
+<span class="font-label-md text-label-md">Attendance</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-md text-label-md">Requests</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 transition-transform scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction: Simulate the finalization of the processing card
+        setTimeout(() => {
+            const btn = document.querySelector('button');
+            const processingCard = document.querySelector('.bg-primary');
+            const loadingRing = document.querySelector('.loading-ring');
+            
+            if(btn && processingCard && loadingRing) {
+                // Change button state
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = 'Complete Registration';
+                btn.classList.add('active:scale-95', 'transition-transform');
+                
+                // Update processing card to success
+                loadingRing.style.animation = 'none';
+                loadingRing.classList.remove('border-t-on-primary');
+                loadingRing.innerHTML = '<span class="material-symbols-outlined text-white" style="font-variation-settings: \'FILL\' 1;">check_circle</span>';
+                loadingRing.classList.add('border-none', 'flex', 'items-center', 'justify-center');
+                
+                processingCard.querySelector('.font-title-lg').innerText = 'Secure profile generated';
+                processingCard.querySelector('.font-label-lg').innerText = 'All biometric data is now encrypted';
+            }
+        }, 3500);
+    </script>
+</body></html>

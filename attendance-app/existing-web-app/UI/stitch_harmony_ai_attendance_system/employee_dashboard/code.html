@@ -1,0 +1,296 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Employee Dashboard - Harmony AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#525657",
+                      "on-tertiary-container": "#eff1f3",
+                      "tertiary-fixed": "#e0e3e5",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "inverse-primary": "#b4c5ff",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "surface-container-high": "#e7e7f3",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "primary": "#004ac6",
+                      "tertiary-container": "#6b6e70",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-primary-container": "#eeefff",
+                      "on-secondary-container": "#54647a",
+                      "secondary": "#505f76",
+                      "on-surface-variant": "#434655",
+                      "on-surface": "#191b23",
+                      "surface-tint": "#0053db",
+                      "on-primary-fixed": "#00174b",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f3f3fe",
+                      "on-background": "#191b23",
+                      "surface-bright": "#faf8ff",
+                      "surface-dim": "#d9d9e5",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-container": "#ededf9",
+                      "on-tertiary-fixed": "#191c1e",
+                      "secondary-container": "#d0e1fb",
+                      "error": "#ba1a1a",
+                      "primary-container": "#2563eb",
+                      "background": "#faf8ff",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface": "#faf8ff",
+                      "inverse-surface": "#2e3039",
+                      "inverse-on-surface": "#f0f0fb",
+                      "primary-fixed": "#dbe1ff",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e1e2ed",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-error-container": "#93000a",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "surface-container-highest": "#e1e2ed",
+                      "outline": "#737686",
+                      "secondary-fixed": "#d3e4fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "md": "16px",
+                      "gutter": "12px",
+                      "sm": "8px",
+                      "xl": "32px",
+                      "edge_margin": "16px",
+                      "xs": "4px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+        body {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface mb-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none flex justify-between items-center px-md h-14">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged man with a friendly smile, wearing a modern blue business-casual shirt. The photography style is clean and corporate with soft, natural lighting against a neutral, bright office background, reflecting the professional yet human-centric vibe of a high-end HRMS application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhfCPZxygfpoxSwM0cEgG6zqh6Ea0WIMm3JZm_w9NspqvyVftopF7z1KRA98jwm61L696RGrh1WAfT99tH3l0IyYA1BNquYW3vFs9sMGTgusFj34gyMfUPKRGq3hOidDWS11kmw_-RcUwiH8xuNKsrPl98A0lEgDSy4zQW5sxzb4k8pSEw9M5QvHWIN40I4EVQQfZ-BfCKNTxramfKFLpvCd9p7ObfTSr6T2k26wx1Z-GS476o-bcd">
+</div>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed">Harmony AI Attendance</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<main class="mt-14 p-md space-y-md">
+<!-- Greeting & Profile Summary -->
+<section class="mt-4">
+<h2 class="font-headline-md-mobile text-headline-md-mobile text-on-surface">Good Morning,</h2>
+<div class="flex items-center justify-between mt-2 glass-card p-4 rounded-xl shadow-sm">
+<div class="flex items-center gap-4">
+<div class="space-y-0.5">
+<p class="font-title-lg text-title-lg text-on-surface">John Doe</p>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">EMP-1234</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="bg-primary/10 text-primary font-label-md text-label-md px-2 py-1 rounded-full">Engineering Dept.</span>
+</div>
+</div>
+</section>
+<!-- Today's Attendance Bento Main Card -->
+<section class="space-y-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant mb-1">TODAY'S ATTENDANCE</p>
+<p class="font-title-lg text-title-lg text-on-surface" id="current-date">October 24, 2023</p>
+</div>
+<div class="text-right">
+<p class="font-display-lg text-display-lg text-primary leading-none" id="current-time">09:15</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AM</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="p-3 bg-surface-container rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Punch In</p>
+<p class="font-title-lg text-title-lg text-on-surface">09:02 AM</p>
+<div class="flex items-center gap-1 mt-1 text-green-600">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-label-sm">On Time</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Punch Out</p>
+<p class="font-title-lg text-title-lg text-on-surface">--:--</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Expected 06:00 PM</p>
+</div>
+</div>
+<div class="flex items-center justify-between py-3 border-t border-outline-variant">
+<div class="flex gap-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">face</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Face Verified</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">GPS Secured</span>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Working Hours</p>
+<p class="font-title-lg text-title-lg text-primary">00h 13m</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Punch Actions -->
+<section class="grid grid-cols-2 gap-md">
+<button class="flex flex-col items-center justify-center gap-2 h-32 bg-[#22C55E] text-white rounded-xl shadow-[0_4px_12px_rgba(34,197,94,0.3)] active:scale-95 transition-transform opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">login</span>
+<span class="font-title-lg text-title-lg">Punch In</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 h-32 bg-[#EF4444] text-white rounded-xl shadow-[0_4px_12px_rgba(239,68,68,0.3)] active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">logout</span>
+<span class="font-title-lg text-title-lg">Punch Out</span>
+</button>
+</section>
+<!-- Quick Actions Grid -->
+<section>
+<h3 class="font-title-lg text-title-lg text-on-surface mb-4">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-gutter">
+<div class="flex items-center gap-3 p-4 bg-white border border-outline-variant rounded-xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">history</span>
+</div>
+<span class="font-label-md text-label-md font-semibold text-on-surface">History</span>
+</div>
+<div class="flex items-center gap-3 p-4 bg-white border border-outline-variant rounded-xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="font-label-md text-label-md font-semibold text-on-surface">Requests</span>
+</div>
+<div class="flex items-center gap-3 p-4 bg-white border border-outline-variant rounded-xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<span class="font-label-md text-label-md font-semibold text-on-surface">Messages</span>
+</div>
+<div class="flex items-center gap-3 p-4 bg-white border border-outline-variant rounded-xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<span class="font-label-md text-label-md font-semibold text-on-surface">Profile</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface dark:bg-surface-container shadow-[0_-2px_4px_rgba(0,0,0,0.04)] flex justify-around items-center h-16 pb-safe px-sm">
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="quick_reference_all">quick_reference_all</span>
+<span class="font-label-sm text-label-sm">Requests</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for clock update
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const timeEl = document.getElementById('current-time');
+            if (timeEl) {
+                timeEl.textContent = `${hours}:${minutes}`;
+            }
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateEl = document.getElementById('current-date');
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString(undefined, options);
+            }
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Simple haptic-like effect for buttons
+        document.querySelectorAll('button:not([disabled])').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.96)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

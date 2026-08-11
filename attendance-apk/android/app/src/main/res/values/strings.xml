@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Harmony AI Attendance</string>
+    <string name="title_activity_main">Harmony AI Attendance</string>
+    <string name="package_name">com.harmony.aiattendance</string>
+    <string name="custom_url_scheme">com.harmony.aiattendance</string>
+</resources>

@@ -1,0 +1,374 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Attendance History - Harmony AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#525657",
+                        "on-tertiary-container": "#eff1f3",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-high": "#e7e7f3",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "tertiary-container": "#6b6e70",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-primary-container": "#eeefff",
+                        "on-secondary-container": "#54647a",
+                        "secondary": "#505f76",
+                        "on-surface-variant": "#434655",
+                        "on-surface": "#191b23",
+                        "surface-tint": "#0053db",
+                        "on-primary-fixed": "#00174b",
+                        "outline-variant": "#c3c6d7",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f3fe",
+                        "on-background": "#191b23",
+                        "surface-bright": "#faf8ff",
+                        "surface-dim": "#d9d9e5",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-container": "#ededf9",
+                        "on-tertiary-fixed": "#191c1e",
+                        "secondary-container": "#d0e1fb",
+                        "error": "#ba1a1a",
+                        "primary-container": "#2563eb",
+                        "background": "#faf8ff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#faf8ff",
+                        "inverse-surface": "#2e3039",
+                        "inverse-on-surface": "#f0f0fb",
+                        "primary-fixed": "#dbe1ff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e2ed",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-container-highest": "#e1e2ed",
+                        "outline": "#737686",
+                        "secondary-fixed": "#d3e4fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "md": "16px",
+                        "gutter": "12px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "edge_margin": "16px",
+                        "xs": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        /* Bottom Sheet Styles */
+        #bottom-sheet {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(100%);
+        }
+        #bottom-sheet.open {
+            transform: translateY(0);
+        }
+        #sheet-overlay {
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        #sheet-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-20">
+<!-- Top App Bar -->
+<header class="bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 sticky z-40">
+<div class="flex justify-between items-center w-full px-md h-14">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyWLoLNmRnGh449o3-CncASv200LCxnCQMRf4G3sf6ntvj8mPCnzKEQPon3C8eg0KgQrEqaaOXlSfFht6BKvzXQECnMDGLx7PxKB870uPe79PvEGZFYk9NEDp4UNa2BrD1xKLG1RFs6cCBjQnhEX1xUH3amGjR26uTGKlQFeCCsliTH1eATkDQJtyqW0hvAxsdXY1V6M7C-OzDnqV2jzJbCKxZkOmvUY7YxED-bILPZj-NOZzJsLYx">
+</div>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed">Harmony AI Attendance</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">notifications</span>
+</button>
+</div>
+</header>
+<main class="max-w-md mx-auto px-md py-md">
+<!-- Month/Year Filter -->
+<section class="mb-gutter">
+<div class="flex items-center justify-between bg-surface-container-low rounded-xl p-base border border-outline-variant">
+<button class="p-sm hover:bg-surface-container transition-all rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_left</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="font-title-lg text-title-lg text-on-surface">October 2023</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">22 Working Days</span>
+</div>
+<button class="p-sm hover:bg-surface-container transition-all rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Calendar Card -->
+<section class="mb-gutter">
+<div class="bg-white border border-[#E2E8F0] rounded-xl shadow-[0_2px_4px_rgba(0,0,0,0.04)] p-md">
+<div class="calendar-grid mb-sm">
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">S</div>
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">M</div>
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">T</div>
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">W</div>
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">T</div>
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">F</div>
+<div class="text-center font-label-md text-label-md text-on-surface-variant py-sm">S</div>
+</div>
+<div class="calendar-grid gap-y-sm" id="calendar-body">
+<!-- Data populated by JS -->
+</div>
+<!-- Legend -->
+<div class="mt-lg pt-md border-t border-outline-variant flex flex-wrap justify-between gap-sm">
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#22C55E]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Present</span>
+</div>
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Late</span>
+</div>
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#EF4444]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Absent</span>
+</div>
+<div class="flex items-center gap-xs">
+<div class="w-2 h-2 rounded-full bg-[#A855F7]"></div>
+<span class="font-label-md text-label-md text-on-surface-variant">Off</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Summary Bento -->
+<section class="grid grid-cols-2 gap-sm mb-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
+<span class="font-label-md text-label-md text-on-surface-variant block mb-1">Total Present</span>
+<span class="font-headline-md text-headline-md text-primary">18 Days</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
+<span class="font-label-md text-label-md text-on-surface-variant block mb-1">Avg. Punch In</span>
+<span class="font-headline-md text-headline-md text-secondary">09:05 AM</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl"><span class="font-label-md text-label-md text-on-surface-variant block mb-1">Late Days</span><span class="font-headline-md text-headline-md text-[#F59E0B]">02 Days</span></div><div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl"><span class="font-label-md text-label-md text-on-surface-variant block mb-1">Absent Days</span><span class="font-headline-md text-headline-md text-[#EF4444]">01 Day</span></div></section>
+</main>
+<!-- Bottom Sheet Overlay -->
+<div class="fixed inset-0 bg-black/40 z-[60] opacity-0" id="sheet-overlay"></div>
+<!-- Bottom Sheet Content -->
+<div class="fixed bottom-0 left-0 right-0 z-[70] bg-surface rounded-t-[28px] max-h-[90vh] overflow-y-auto shadow-xl" id="bottom-sheet">
+<div class="w-12 h-1 bg-outline-variant rounded-full mx-auto my-3"></div>
+<div class="px-edge_margin pb-xl" id="sheet-content"><div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant mb-gutter"><div class="w-14 h-14 rounded-full border-2 border-primary-container p-0.5 overflow-hidden"><img class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyWLoLNmRnGh449o3-CncASv200LCxnCQMRf4G3sf6ntvj8mPCnzKEQPon3C8eg0KgQrEqaaOXlSfFht6BKvzXQECnMDGLx7PxKB870uPe79PvEGZFYk9NEDp4UNa2BrD1xKLG1RFs6cCBjQnhEX1xUH3amGjR26uTGKlQFeCCsliTH1eATkDQJtyqW0hvAxsdXY1V6M7C-OzDnqV2jzJbCKxZkOmvUY7YxED-bILPZj-NOZzJsLYx"></div><div><h2 class="font-headline-md-mobile text-headline-md-mobile">Alexander Bennett</h2><div class="flex items-center gap-2 mt-1"><span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full">ID: EMP-884210</span><span class="font-label-md text-label-md text-secondary">UX Department</span></div></div></div><div class="bg-surface-container p-md rounded-xl mb-gutter flex justify-between items-center border border-outline-variant"><div><p class="font-label-md text-label-md text-secondary uppercase">October 24, 2023</p><p class="font-title-lg text-title-lg">Tuesday</p></div><div class="flex items-center gap-2 px-4 py-1.5 rounded-full font-bold text-label-md bg-[#22C55E]/20 text-[#22C55E]"><div class="w-2 h-2 rounded-full bg-[#22C55E]"></div>PRESENT</div></div><div class="grid grid-cols-2 gap-sm mb-gutter"><div class="bg-white border border-outline-variant p-md rounded-xl shadow-sm"><p class="font-label-md text-label-md text-secondary">Punch In</p><p class="font-headline-md text-headline-md text-primary mt-1">09:02 AM</p></div><div class="bg-white border border-outline-variant p-md rounded-xl shadow-sm"><p class="font-label-md text-label-md text-secondary">Punch Out</p><p class="font-headline-md text-headline-md text-secondary mt-1">06:08 PM</p></div><div class="col-span-2 bg-primary-container text-on-primary-container p-md rounded-xl"><div class="flex justify-between items-center"><span class="font-label-md">Total Working Hours</span><span class="font-title-lg">09h 06m</span></div></div></div><div class="bg-white border border-outline-variant p-md rounded-xl mb-gutter"><h4 class="font-title-lg text-title-lg mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">verified</span> Verification Status</h4><div class="flex gap-sm"><div class="flex items-center gap-1 text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-[#22C55E]">check_circle</span> Face Verified</div><div class="flex items-center gap-1 text-label-md text-on-surface-variant"><span class="material-symbols-outlined text-[18px] text-[#22C55E]">check_circle</span> GPS Verified</div></div></div><div class="bg-white border border-outline-variant p-md rounded-xl mb-gutter"><h4 class="font-title-lg text-title-lg mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">location_on</span> Geolocation Details</h4><p class="font-body-md font-semibold">Head Office, Silicon Tower</p><p class="text-label-sm text-on-surface-variant">Lat: 37.7749° N, Long: 122.4194° W</p><div class="w-full h-24 bg-surface-container rounded-lg mt-3 overflow-hidden border border-outline-variant"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_sr2MDSNqte7Rw9SPi7NEYR4vjBtlzCEXWeYNfF7SXr5sAkOisGmAUrK9ItwG-Ai7MkL5sO9odt7ZqC8mQwdLvM7AP6BZwe3hXKJndGl7uQKwsxvfgXq_T9e4EgbbHBKfMgb0IklyZfNlrv5_DM8Y06XUy1pKgTINx8g2X9KpUEQMAEPDwG200MXP95L2J4k2grXaamnf-xm-cfGrjs91cTmEAczrTzAA8SM_gn3hwZFtUPOwAeTU"></div></div></div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-sm bg-surface dark:bg-surface-container shadow-[0_-2px_4px_rgba(0,0,0,0.04)]">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">quick_reference_all</span>
+<span class="font-label-sm text-label-sm">Requests</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+    const calendarBody = document.getElementById('calendar-body');
+    const bottomSheet = document.getElementById('bottom-sheet');
+    const sheetOverlay = document.getElementById('sheet-overlay');
+    const sheetContent = document.getElementById('sheet-content');
+
+    const attendanceData = {
+        1: { status: 'Off', label: 'Sunday', color: '#A855F7' },
+        2: { status: 'Present', label: 'Monday', color: '#22C55E', in: '08:50 AM', out: '06:05 PM', hours: '09h 15m' },
+        3: { status: 'Present', label: 'Tuesday', color: '#22C55E', in: '08:55 AM', out: '06:10 PM', hours: '09h 15m', current: true },
+        4: { status: 'Absent', label: 'Wednesday', color: '#EF4444' },
+        5: { status: 'Late', label: 'Thursday', color: '#F59E0B', in: '09:35 AM', out: '06:05 PM', hours: '08h 30m' },
+        6: { status: 'Present', label: 'Friday', color: '#22C55E', in: '08:45 AM', out: '05:55 PM', hours: '09h 10m' },
+        7: { status: 'Off', label: 'Saturday', color: '#A855F7' },
+        8: { status: 'Off', label: 'Sunday', color: '#A855F7' }
+    };
+
+    function renderCalendar() {
+        const prevMonthDays = [24, 25, 26, 27, 28, 29, 30];
+        const daysInMonth = 31;
+        
+        let html = '';
+        
+        // Prev Month
+        prevMonthDays.slice(0, 6).forEach(day => {
+            html += `<div class="flex flex-col items-center py-sm opacity-30 font-body-sm text-body-sm"><span>${day}</span></div>`;
+        });
+
+        // Current Month
+        for (let i = 1; i <= daysInMonth; i++) {
+            const data = attendanceData[i] || { status: 'Future', color: '#CBD5E1' };
+            const isActive = data.current ? 'bg-primary-container/10 border border-primary/20 rounded-lg' : '';
+            const textClass = data.current ? 'text-primary font-bold' : '';
+            
+            html += `
+                <div class="date-cell flex flex-col items-center py-sm font-body-sm text-body-sm cursor-pointer hover:bg-surface-container transition-colors rounded-lg ${isActive}" data-day="${i}">
+                    <span class="${textClass}">${i}</span>
+                    <div class="w-1.5 h-1.5 rounded-full mt-1" style="background-color: ${data.color}"></div>
+                </div>
+            `;
+        }
+        
+        calendarBody.innerHTML = html;
+
+        document.querySelectorAll('.date-cell').forEach(cell => {
+            cell.addEventListener('click', () => {
+                const day = cell.getAttribute('data-day');
+                showDetails(day);
+            });
+        });
+    }
+
+    function showDetails(day) {
+        const data = attendanceData[day] || { status: 'Future' };
+        let content = `
+            <div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant mb-gutter">
+                <div class="w-14 h-14 rounded-full border-2 border-primary-container p-0.5 overflow-hidden">
+                    <img class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyWLoLNmRnGh449o3-CncASv200LCxnCQMRf4G3sf6ntvj8mPCnzKEQPon3C8eg0KgQrEqaaOXlSfFht6BKvzXQECnMDGLx7PxKB870uPe79PvEGZFYk9NEDp4UNa2BrD1xKLG1RFs6cCBjQnhEX1xUH3amGjR26uTGKlQFeCCsliTH1eATkDQJtyqW0hvAxsdXY1V6M7C-OzDnqV2jzJbCKxZkOmvUY7YxED-bILPZj-NOZzJsLYx"/>
+                </div>
+                <div>
+                    <h2 class="font-headline-md-mobile text-headline-md-mobile">Alex Thompson</h2>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full">ID: EMP-88210</span>
+                        <span class="font-label-md text-label-md text-secondary">UX Department</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-surface-container p-md rounded-xl mb-gutter flex justify-between items-center border border-outline-variant">
+                <div>
+                    <p class="font-label-md text-label-md text-secondary uppercase">Oct ${day}, 2023</p>
+                    <p class="font-title-lg text-title-lg">${data.label || 'Day'}</p>
+                </div>
+                <div class="px-4 py-1.5 rounded-full font-bold text-label-md" style="background-color: ${data.color}20; color: ${data.color}">
+                    ${data.status.toUpperCase()}
+                </div>
+            </div>
+        `;
+
+        if (data.status === 'Present' || data.status === 'Late') {
+            content += `
+                <div class="grid grid-cols-2 gap-sm mb-gutter">
+                    <div class="bg-white border border-outline-variant p-md rounded-xl shadow-sm">
+                        <p class="font-label-md text-label-md text-secondary">Punch In</p>
+                        <p class="font-headline-md text-headline-md text-primary mt-1">${data.in}</p>
+                    </div>
+                    <div class="bg-white border border-outline-variant p-md rounded-xl shadow-sm">
+                        <p class="font-label-md text-label-md text-secondary">Punch Out</p>
+                        <p class="font-headline-md text-headline-md text-secondary mt-1">${data.out}</p>
+                    </div>
+                    <div class="col-span-2 bg-primary-container text-on-primary-container p-md rounded-xl">
+                        <div class="flex justify-between items-center">
+                            <span class="font-label-md">Total Working Hours</span>
+                            <span class="font-title-lg">${data.hours}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white border border-outline-variant p-md rounded-xl mb-gutter">
+                    <h4 class="font-title-lg text-title-lg mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">location_on</span> Geolocation Details
+                    </h4>
+                    <p class="font-body-md font-semibold">Head Office, Silicon Tower</p>
+                    <div class="w-full h-24 bg-surface-container rounded-lg mt-3 overflow-hidden border border-outline-variant">
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_sr2MDSNqte7Rw9SPi7NEYR4vjBtlzCEXWeYNfF7SXr5sAkOisGmAUrK9ItwG-Ai7MkL5sO9odt7ZqC8mQwdLvM7AP6BZwe3hXKJndGl7uQKwsxvfgXq_T9e4EgbbHBKfMgb0IklyZfNlrv5_DM8Y06XUy1pKgTINx8g2X9KpUEQMAEPDwG200MXP95L2J4k2grXaamnf-xm-cfGrjs91cTmEAczrTzAA8SM_gn3hwZFtUPOwAeTU"/>
+                    </div>
+                </div>
+            `;
+        } else if (data.status === 'Absent') {
+            content += `<div class="bg-error-container/20 p-xl rounded-xl border border-error/20 text-center"><p class="text-error font-medium">No attendance recorded</p></div>`;
+        } else if (data.status === 'Off') {
+            content += `<div class="bg-surface-container-high p-xl rounded-xl text-center border border-outline-variant"><p class="text-on-surface-variant font-medium">Monday Holiday</p></div>`;
+        } else {
+            content += `<div class="bg-surface-container p-xl rounded-xl text-center border border-outline-variant"><p class="text-on-surface-variant font-medium">Attendance not available</p></div>`;
+        }
+
+        sheetContent.innerHTML = content;
+        openSheet();
+    }
+
+    function openSheet() {
+        bottomSheet.classList.add('open');
+        sheetOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSheet() {
+        bottomSheet.classList.remove('open');
+        sheetOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    sheetOverlay.addEventListener('click', closeSheet);
+    
+    // Swipe down to close
+    let startY = 0;
+    bottomSheet.addEventListener('touchstart', e => startY = e.touches[0].clientY);
+    bottomSheet.addEventListener('touchmove', e => {
+        const deltaY = e.touches[0].clientY - startY;
+        if (deltaY > 50) closeSheet();
+    });
+
+    renderCalendar();
+</script>
+</body></html>

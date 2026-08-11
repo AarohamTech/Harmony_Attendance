@@ -1,0 +1,362 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>New Request - Harmony AI Attendance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#525657",
+                      "on-tertiary-container": "#eff1f3",
+                      "tertiary-fixed": "#e0e3e5",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "inverse-primary": "#b4c5ff",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "surface-container-high": "#e7e7f3",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "primary": "#004ac6",
+                      "tertiary-container": "#6b6e70",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-primary-container": "#eeefff",
+                      "on-secondary-container": "#54647a",
+                      "secondary": "#505f76",
+                      "on-surface-variant": "#434655",
+                      "on-surface": "#191b23",
+                      "surface-tint": "#0053db",
+                      "on-primary-fixed": "#00174b",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f3f3fe",
+                      "on-background": "#191b23",
+                      "surface-bright": "#faf8ff",
+                      "surface-dim": "#d9d9e5",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "surface-container": "#ededf9",
+                      "on-tertiary-fixed": "#191c1e",
+                      "secondary-container": "#d0e1fb",
+                      "error": "#ba1a1a",
+                      "primary-container": "#2563eb",
+                      "background": "#faf8ff",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface": "#faf8ff",
+                      "inverse-surface": "#2e3039",
+                      "inverse-on-surface": "#f0f0fb",
+                      "primary-fixed": "#dbe1ff",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e1e2ed",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-error-container": "#93000a",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "surface-container-highest": "#e1e2ed",
+                      "outline": "#737686",
+                      "secondary-fixed": "#d3e4fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "md": "16px",
+                      "gutter": "12px",
+                      "sm": "8px",
+                      "xl": "32px",
+                      "edge_margin": "16px",
+                      "xs": "4px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "body-sm": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC; /* Level 0 Background */
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-shadow {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+        .input-focus:focus-within {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 1px #2563EB;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        .error-ring {
+            border-color: #ba1a1a !important;
+            box-shadow: 0 0 0 1px #ba1a1a !important;
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col pb-20">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 z-40 sticky">
+<div class="flex justify-between items-center w-full px-md h-14 max-w-2xl mx-auto">
+<div class="flex items-center gap-sm">
+<button class="p-2 -ml-2 hover:bg-surface-container dark:hover:bg-surface-container-high rounded-full transition-colors" onclick="window.history.back()">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">arrow_back</span>
+</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed">New Request</h1>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIJoD4_42xaBow5Vm7J5wRencATlOO38TkkZzakl4OjROc5PSAXA9uRxu5AzQQcUzSbh_xXD5_-Cjz-cd7RtR1_LYzS4wvNpUBw9aCTP3SJCpSPhc-QXcbB8YbQsUlOJ768flQsDJfNypYXv-X_I17jI1KpfgLGArQIeOXZ2r6cXkNXjyqrMGMtCLrr3c50ZvcXk0cs-0_IWTcFnExGx2Xub_l7YIiF1lIqU5eGQC8hRokKSqsOz3Q">
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 w-full max-w-2xl mx-auto px-md py-lg">
+<!-- Instructional Header -->
+<div class="mb-lg">
+<h2 class="font-headline-md-mobile text-headline-md-mobile text-on-surface mb-xs">Submit a Request</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Fill in the details below to submit a new leave or adjustment request to your manager.</p>
+</div>
+<!-- Form Container -->
+<form class="space-y-gutter" id="requestForm" novalidate="">
+<!-- Bento style Form Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Request Type -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md card-shadow flex flex-col gap-xs transition-all hover:border-primary/30" id="field_request_type">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider" for="request_type">Request Type</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant">category</span>
+<select class="w-full pl-xl bg-transparent border-none focus:ring-0 font-body-md text-body-md appearance-none" id="request_type" required="">
+<option value="">Select Type</option>
+<option>Leave Request</option>
+<option>Work from Home</option>
+<option>Attendance Correction</option>
+<option>Overtime Approval</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Reason -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md card-shadow flex flex-col gap-xs transition-all hover:border-primary/30" id="field_reason">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider" for="reason">Reason</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant">info</span>
+<select class="w-full pl-xl bg-transparent border-none focus:ring-0 font-body-md text-body-md appearance-none" id="reason" required="">
+<option value="">Select Reason</option>
+<option>Sick Leave</option>
+<option>Casual Leave</option>
+<option>Family Emergency</option>
+<option>Internet Issues</option>
+<option>Official Duty</option>
+</select>
+<span class="material-symbols-outlined absolute right-0 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Date Picker -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md card-shadow flex flex-col gap-xs transition-all hover:border-primary/30" id="field_date">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider" for="date_picker">Date</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant">calendar_today</span>
+<input class="w-full pl-xl bg-transparent border-none focus:ring-0 font-body-md text-body-md" id="date_picker" required="" type="date" value="2023-11-24">
+</div>
+</div>
+<!-- Time Picker -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md card-shadow flex flex-col gap-xs transition-all hover:border-primary/30">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider" for="time_picker">Time (Optional)</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-0 text-on-surface-variant">schedule</span>
+<input class="w-full pl-xl bg-transparent border-none focus:ring-0 font-body-md text-body-md" id="time_picker" type="time">
+</div>
+</div>
+</div>
+<!-- Remarks - Full Width -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md card-shadow flex flex-col gap-xs transition-all hover:border-primary/30 min-h-[160px]" id="field_remarks">
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider" for="remarks">Remarks</label>
+<div class="relative h-full flex items-start mt-2">
+<span class="material-symbols-outlined absolute left-0 top-0 text-on-surface-variant">notes</span>
+<textarea class="w-full pl-xl bg-transparent border-none focus:ring-0 font-body-md text-body-md resize-none custom-scrollbar" id="remarks" placeholder="Briefly explain your request here..." required="" rows="4"></textarea>
+</div>
+</div>
+<!-- Visual Context - Abstract UI element -->
+<div class="relative h-48 rounded-xl overflow-hidden border border-outline-variant group">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="text-center p-md">
+<span class="material-symbols-outlined text-display-lg text-primary/20 scale-150 mb-sm">task_alt</span>
+<p class="font-label-md text-label-md text-on-surface-variant max-w-[200px] mx-auto">Your request will be routed to your department head for approval.</p>
+</div>
+</div>
+<div class="absolute inset-0 -z-10 bg-cover bg-center opacity-30" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCOS6aTnh09M9urt1hGBggp-B54xM4p4NmfaS7Aypxdfzz2E6zyW8_DO39lWhvu7gGNWDU3urEewjX5k5tzy0Z4oKmSF7ukrPQwHg3a_9l_cZ4XBIeds9gXasmpP3CRiv5f80Luoe4kk0Pdr85IU_5_pIvR_76hGZfzBlg0g3_LbbIALgCr-5CqTPtQG4hBmeOj2LnPi5M-RZZu8gdNrMfYw4PR4wEPbXptprfei5gqVV6JuenybVpo')"></div>
+</div>
+<!-- Submit Button -->
+<div class="pt-md pb-xl">
+<button class="w-full h-12 bg-primary text-on-primary font-title-lg text-title-lg rounded-xl shadow-lg hover:bg-on-primary-fixed-variant transition-all active:scale-[0.98] flex items-center justify-center gap-sm" id="submitBtn" type="submit">
+<span>Submit Request</span>
+<span class="material-symbols-outlined">send</span>
+</button>
+<button class="w-full mt-gutter h-12 bg-transparent text-secondary font-body-md text-body-md rounded-xl border border-outline-variant hover:bg-surface-container transition-all" onclick="window.history.back()" type="button">
+                    Discard Draft
+                </button>
+</div>
+</form>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-sm bg-surface dark:bg-surface-container shadow-[0_-2px_4px_rgba(0,0,0,0.04)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Attendance -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</a>
+<!-- Requests (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">quick_reference_all</span>
+<span class="font-label-sm text-label-sm">Requests</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim px-4 py-1 hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for form inputs
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            const container = input.closest('.bg-surface-container-lowest');
+            input.addEventListener('focus', () => {
+                container.classList.add('border-primary', 'shadow-md');
+                container.classList.remove('border-outline-variant', 'error-ring');
+            });
+            input.addEventListener('blur', () => {
+                container.classList.remove('border-primary', 'shadow-md');
+                if (!input.checkValidity()) {
+                    container.classList.add('error-ring');
+                } else {
+                    container.classList.add('border-outline-variant');
+                }
+            });
+            // Clear error on input
+            input.addEventListener('input', () => {
+                if (input.checkValidity()) {
+                    container.classList.remove('error-ring');
+                }
+            });
+        });
+
+        // Form logic
+        const form = document.getElementById('requestForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Validation
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                const container = field.closest('.bg-surface-container-lowest');
+                if (!field.value.trim() || !field.checkValidity()) {
+                    isValid = false;
+                    container.classList.add('error-ring');
+                } else {
+                    container.classList.remove('error-ring');
+                }
+            });
+
+            if (!isValid) {
+                // Focus the first invalid field
+                const firstInvalid = form.querySelector('.error-ring input, .error-ring select, .error-ring textarea');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            // Gather Data
+            const formData = {
+                id: 'REQ' + Date.now(),
+                type: document.getElementById('request_type').value,
+                reason: document.getElementById('reason').value,
+                date: document.getElementById('date_picker').value,
+                time: document.getElementById('time_picker').value || 'N/A',
+                remarks: document.getElementById('remarks').value,
+                status: 'Pending',
+                submittedAt: new Date().toISOString()
+            };
+
+            // Save to LocalStorage
+            const existingRequests = JSON.parse(localStorage.getItem('requests') || '[]');
+            existingRequests.unshift(formData);
+            localStorage.setItem('requests', JSON.stringify(existingRequests));
+
+            // UI Feedback
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Submitting...`;
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Request Sent!`;
+                submitBtn.classList.replace('bg-primary', 'bg-emerald-600');
+                
+                setTimeout(() => {
+                    // Redirect or Reset
+                    // For this prototype, we simulate returning to list
+                    alert('Request submitted successfully! Redirecting to requests list...');
+                    // window.location.href = 'requests_list.html'; // In a real app
+                    
+                    // Reset UI for the demo
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.classList.replace('bg-emerald-600', 'bg-primary');
+                    submitBtn.disabled = false;
+                    form.reset();
+                    document.querySelectorAll('.error-ring').forEach(el => el.classList.remove('error-ring'));
+                }, 1500);
+            }, 1000);
+        });
+    </script>
+</body></html>

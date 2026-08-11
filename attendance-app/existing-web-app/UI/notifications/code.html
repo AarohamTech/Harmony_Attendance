@@ -1,0 +1,274 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Notifications - Harmony AI Attendance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .notification-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+        }
+        .notification-card:active {
+            transform: scale(0.98);
+        }
+        .glass-header {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC; /* Consistent with Level 0 Background */
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#525657",
+                    "on-tertiary-container": "#eff1f3",
+                    "tertiary-fixed": "#e0e3e5",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "inverse-primary": "#b4c5ff",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "surface-container-high": "#e7e7f3",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary": "#004ac6",
+                    "tertiary-container": "#6b6e70",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-primary-container": "#eeefff",
+                    "on-secondary-container": "#54647a",
+                    "secondary": "#505f76",
+                    "on-surface-variant": "#434655",
+                    "on-surface": "#191b23",
+                    "surface-tint": "#0053db",
+                    "on-primary-fixed": "#00174b",
+                    "outline-variant": "#c3c6d7",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f3f3fe",
+                    "on-background": "#191b23",
+                    "surface-bright": "#faf8ff",
+                    "surface-dim": "#d9d9e5",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-container": "#ededf9",
+                    "on-tertiary-fixed": "#191c1e",
+                    "secondary-container": "#d0e1fb",
+                    "error": "#ba1a1a",
+                    "primary-container": "#2563eb",
+                    "background": "#faf8ff",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "surface": "#faf8ff",
+                    "inverse-surface": "#2e3039",
+                    "inverse-on-surface": "#f0f0fb",
+                    "primary-fixed": "#dbe1ff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e2ed",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "surface-container-highest": "#e1e2ed",
+                    "outline": "#737686",
+                    "secondary-fixed": "#d3e4fe"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "md": "16px",
+                    "gutter": "12px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "edge_margin": "16px",
+                    "xs": "4px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-md-mobile": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-lg": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-md-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 glass-header bg-surface/80 border-b border-outline-variant px-md h-14 flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary">Notifications</h1>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-primary font-label-md text-label-md px-sm py-xs rounded hover:bg-primary/5 transition-colors">
+                Mark all as read
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-24 px-md max-w-2xl mx-auto space-y-md">
+<!-- Date Separator -->
+<div class="flex items-center gap-sm py-xs">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Today</span>
+<div class="flex-grow h-px bg-outline-variant"></div>
+</div>
+<!-- Notification List -->
+<div class="space-y-sm">
+<!-- Attendance Approved -->
+<div class="notification-card bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-start gap-md shadow-sm">
+<div class="w-10 h-10 flex-shrink-0 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-title-lg text-body-md font-semibold text-on-surface">Attendance Approved</h3>
+<span class="text-label-sm font-label-sm text-outline">10:45 AM</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">Your attendance correction for August 14th has been approved by your manager.</p>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary mt-2"></div>
+</div>
+<!-- Holiday Notice -->
+<div class="notification-card bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-start gap-md shadow-sm">
+<div class="w-10 h-10 flex-shrink-0 bg-primary-container/10 text-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="celebration">celebration</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-title-lg text-body-md font-semibold text-on-surface">Holiday Notice</h3>
+<span class="text-label-sm font-label-sm text-outline">09:15 AM</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">Upcoming holiday: Labor Day (Sept 4th). The office will remain closed. Enjoy your break!</p>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary mt-2"></div>
+</div>
+<!-- System Alert -->
+<div class="notification-card bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-start gap-md shadow-sm">
+<div class="w-10 h-10 flex-shrink-0 bg-error-container/20 text-error rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-title-lg text-body-md font-semibold text-on-surface">System Alert</h3>
+<span class="text-label-sm font-label-sm text-outline">Yesterday</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">The biometric system is undergoing maintenance from 11 PM to 2 AM tonight. Use the mobile app for clocking.</p>
+</div>
+</div>
+</div>
+<!-- Date Separator -->
+<div class="flex items-center gap-sm py-xs mt-lg">
+<span class="text-label-md font-label-md text-outline uppercase tracking-wider">Earlier this week</span>
+<div class="flex-grow h-px bg-outline-variant"></div>
+</div>
+<!-- Earlier Notifications -->
+<div class="space-y-sm">
+<!-- Leave Request Status -->
+<div class="notification-card bg-surface/50 border border-outline-variant/60 rounded-xl p-md flex items-start gap-md grayscale-[0.2] opacity-80">
+<div class="w-10 h-10 flex-shrink-0 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-title-lg text-body-md font-semibold text-on-surface">Leave Request Applied</h3>
+<span class="text-label-sm font-label-sm text-outline">Aug 18</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">Your sick leave request for Aug 20-21 has been submitted successfully.</p>
+</div>
+</div>
+<!-- Policy Update -->
+<div class="notification-card bg-surface/50 border border-outline-variant/60 rounded-xl p-md flex items-start gap-md grayscale-[0.2] opacity-80">
+<div class="w-10 h-10 flex-shrink-0 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-title-lg text-body-md font-semibold text-on-surface">Policy Update</h3>
+<span class="text-label-sm font-label-sm text-outline">Aug 16</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">The hybrid work policy has been updated. Please review the new guidelines in the documents section.</p>
+</div>
+</div>
+</div>
+<!-- Image Callout / Empty State Graphic (Simplified for list) -->
+<div class="pt-lg flex flex-col items-center opacity-60">
+<div class="w-32 h-32 rounded-full mb-md overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A serene 3D illustration of an abstract notification bell resting on a soft cloud. The aesthetic is ultra-modern with clean gradients of primary blue and soft white. The background is a minimalist light-mode office setting with high-key lighting. The scene conveys a sense of organized, human-centric information management for a professional enterprise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7WXjobnBXQOQ-GbOOD6dFuGwFRJvOmXcNI0xm4Db3BBT9osmeuZqyX4yxP3bCbZGZUoOEo5i_3R9rJGWWyv3mj1gwN6S8jVH4MmBHR5PImS0CntRNjd9jG6bzJW9fCpyObZ0dxhMwN50hL-1yARmvxl9ucQV7BY_FHaapOEHmtPy2T8S6F8ZcJBT7eB7P9YGeK-_CUCaLCKmRStJ1Q-XNPiZQ0kkicgUxkSGInATeVICYNfGueIwu">
+</div>
+<p class="text-label-md font-label-md text-outline">You're all caught up!</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-sm bg-surface shadow-[0_-2px_4px_rgba(0,0,0,0.04)] border-t border-outline-variant/30">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<!-- Attendance -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="fingerprint">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</a>
+<!-- Requests -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="quick_reference_all">quick_reference_all</span>
+<span class="font-label-sm text-label-sm">Requests</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-secondary px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for notification items
+        document.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Dim the blue dot on click to simulate "Read" status
+                const dot = this.querySelector('.bg-primary');
+                if (dot) {
+                    dot.classList.remove('bg-primary');
+                    dot.classList.add('bg-outline-variant');
+                }
+                this.classList.add('opacity-80');
+            });
+        });
+    </script>
+</body></html>
