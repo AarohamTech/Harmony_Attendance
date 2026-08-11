@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Platform } from 'react-native';
@@ -41,6 +41,42 @@ export type RootStackParamList = {
   LeaveRequest: undefined;
   MissedPunch: undefined;
   Settings: undefined;
+};
+
+const linking: LinkingOptions<RootStackParamList> = {
+  prefixes: [
+    'https://harmony-attendance.vercel.app',
+    'http://localhost:8081',
+    'http://localhost:8000',
+    'harmony://',
+  ],
+  config: {
+    screens: {
+      Login: {
+        path: 'login',
+        alias: [''],
+      },
+      EmployeeDashboard: 'dashboard',
+      Dashboard: 'dashboard-overview',
+      EmployeeProfile: 'profile',
+      Settings: 'settings',
+      EditProfile: 'edit-profile',
+      AttendanceDetails: 'attendance-details',
+      AttendanceHistory: 'attendance-history',
+      Attendance: 'attendance',
+      AttendanceRequests: 'requests',
+      Leave: 'leave',
+      CreateEmployeeAccount: 'register',
+      ForgotPassword: 'forgot-password',
+      FaceCapture: 'face-capture',
+      PunchIn: 'punch-in',
+      PunchOut: 'punch-out',
+      NewRequest: 'new-request',
+      LeaveRequest: 'leave-request',
+      MissedPunch: 'missed-punch',
+      Notifications: 'notifications',
+    },
+  },
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -130,7 +166,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1, height: '100%', minHeight: 0 }}>
       <SafeAreaProvider style={{ flex: 1, height: '100%', minHeight: 0 }}>
         <ThemeProvider>
-          <NavigationContainer>
+          <NavigationContainer linking={linking}>
             <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false, cardStyle: { flex: 1, height: '100%', minHeight: 0 } }}>
               <Stack.Screen
                 name="Login"

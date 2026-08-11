@@ -18,20 +18,30 @@ const employeeController = require('./controllers/employeeController');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://harmony-attendance.vercel.app',
   'http://localhost:8081',
   'http://127.0.0.1:8081',
   'http://localhost:8000',
   'http://127.0.0.1:8000',
+  'http://localhost:3000',
+  'http://localhost:5173',
   'http://localhost:19006',
   'http://localhost:8080'
-];
+].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.startsWith('http://localhost') ||
+      origin.startsWith('http://127.0.0.1') ||
+      origin.endsWith('.vercel.app')
+    ) {
       return callback(null, true);
     }
     return callback(null, true);
@@ -45,13 +55,20 @@ app.options('*', cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Health Check Endpoint (Required by prompt)
+// Root Route & Health Check Endpoints
+app.get('/', (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Harmony Attendance API'
+  });
+});
+
 app.get('/api/health', async (req, res) => {
   try {
     const result = await db.query('SELECT NOW()');
     return res.status(200).json({
       success: true,
-      message: 'Database connection is working cleanly',
+      message: 'Harmony Attendance API is running',
       timestamp: result.rows[0].now
     });
   } catch (err) {
@@ -144,9 +161,9 @@ app.use(errorMiddleware);
 
 // Start Server with Automatic EADDRINUSE Port Recovery
 const startServer = (portToUse) => {
-  const server = app.listen(portToUse, () => {
+  const server = app.listen(portToUse, HOST, () => {
     console.log(`===================================================`);
-    console.log(`  Attendance Express Backend Server running on Port ${portToUse}`);
+    console.log(`  Attendance Express Backend Server running on ${HOST}:${portToUse}`);
     console.log(`  Health check: http://localhost:${portToUse}/api/health`);
     console.log(`  Database: Supabase PostgreSQL`);
     console.log(`===================================================`);
@@ -187,10 +204,8 @@ process.on('uncaughtException', (err) => {
   console.error('[UNCAUGHT EXCEPTION]', err);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('[UNHANDLED REJECTION]', reason);
-});
-
-startServer(PORT);
+if (!process.env.VERCEL) {
+  startServer(PORT);
+}
 
 module.exports = app;

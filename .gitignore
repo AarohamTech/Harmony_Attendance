@@ -47,3 +47,5 @@ replay_pid*.log
 # OS
 .DS_Store
 Thumbs.db
+.vercel
+.env*

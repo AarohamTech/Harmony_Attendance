@@ -88,15 +88,17 @@ export type NotificationRecord = {
   unread: boolean;
 };
 
-// Base URL resolution: Unified Port 8081 Architecture (Relative URL on Web)
+// Base URL resolution: Uses EXPO_PUBLIC_API_URL in production or local fallback
 const getApiBaseUrl = () => {
+  let url = '';
   if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
+    url = process.env.EXPO_PUBLIC_API_URL;
+  } else if (Platform.OS === 'web') {
+    url = 'http://localhost:8000';
+  } else {
+    url = 'http://10.0.2.2:8000';
   }
-  if (Platform.OS === 'web') {
-    return 'http://localhost:8000';
-  }
-  return 'http://10.0.2.2:8000';
+  return url.replace(/\/+$/, '');
 };
 
 export const API_BASE_URL = getApiBaseUrl();
