@@ -1,165 +1,145 @@
-# Harmony AI Attendance System
+# Harmony AI Attendance
 
-A production-grade, real-time employee attendance management system featuring biometric face recognition, attendance tracking, Punch In / Punch Out verification, interactive calendar-based attendance history, employee leave & correction requests, real-time notifications, report exports (CSV/Excel/PDF), and cross-platform Web and Native Android application support.
+### Secure Biometric 
+
+Harmony AI Attendance is a secure biometric employee attendance and HR management platform designed to manage employee registration, authentication, attendance, punch-in/punch-out, leave requests, missed-punch requests, notifications, profiles, and AI-assisted employee services through a modern web and mobile application.
 
 ---
 
 ## 1. PROJECT OVERVIEW
 
-The **Harmony AI Attendance System** is an enterprise-ready attendance solution designed for organizations requiring secure, accurate, and automated employee attendance tracking.
+The **Harmony AI Attendance System** is an enterprise-grade biometric HR management and attendance tracking solution built for modern organizations. The system eliminates proxy clocking (buddy punching) through real-time facial feature extraction and cosine similarity verification.
 
-### Primary Purpose
-- Eliminate proxy attendance through biometric facial verification.
-- Provide seamless, real-time Punch In and Punch Out workflows for both Web and Mobile devices.
-- Offer an interactive attendance calendar where employees can review historical attendance, working hours, and late/early exit statuses.
-- Streamline employee leave requests and manager approval workflows.
-- Provide exportable attendance logs in CSV, Excel (`.xlsx`), and PDF formats.
-
-### System Architecture Overview
-The application is built on a decoupled architecture featuring:
-1. **Web Application**: React 19 / React Native Web application built with Expo, supporting responsive layouts across desktop, tablet, and mobile browsers.
-2. **Android Application**: Native Android APK built using Capacitor 6, exposing native camera hardware and biometric scanning interfaces.
-3. **Backend API**: Dual REST API server architecture (Node.js Express primary server on port `8000` & Python FastAPI server on port `8002`) providing JWT authentication, business logic, and face embedding processing.
-4. **Database Layer**: Production Supabase PostgreSQL database holding all employee profiles, face embeddings, attendance logs, requests, and notifications.
+### System Purpose & Objectives
+- **Automated Attendance Verification**: Enforce face-matching camera capture during Punch In and Punch Out workflows.
+- **Cross-Platform Accessibility**: Operate seamlessly across Web browsers (desktop & mobile) and native Android devices.
+- **Workforce Management**: Support employee profile creation, shift tracking, working hours computation, and office location mapping.
+- **Request Workflows**: Provide structured employee request handling for leave applications, missed punch corrections, and early exit justifications with real-time manager approvals.
+- **Cloud Data Persistence**: Store system records securely in a PostgreSQL cloud database (Supabase) with SQLite fallback capabilities.
 
 ---
 
 ## 2. KEY FEATURES
 
-- **One-Time Employee Registration**: Self-registration flow with badge ID, email, phone, department, designation, and encrypted PIN/password.
-- **Secure JWT Authentication**: Token-based authentication with automatic session persistence across web browsers and Android devices.
-- **Biometric Face Registration**: Capture live face frames to generate 128-dimensional L2-normalized feature vectors saved directly to PostgreSQL.
-- **Real-Time Biometric Face Verification**: Punch In and Punch Out enforce real camera capture and backend cosine similarity verification against stored employee embeddings.
-- **Biometric Punch In**: Face-verified clocking-in with late status tracking (`ON TIME`, `LATE`).
-- **Biometric Punch Out**: Face-verified clocking-out with automated total working hours calculation (`HHh MMm`).
-- **Interactive Attendance Calendar**: Navigate months, select specific dates, and view exact punch times, working hours, location details, and remarks.
-- **Attendance Requests & Manager Workflow**: Submit leave requests, missed punch corrections, or early exit reasons, with manager approve/reject tracking.
-- **Real-Time Notifications**: Automated system alerts for request approvals, late attendance warnings, and clock-out reminders.
-- **Multi-Format Report Exporting**: Download attendance logs in CSV, Excel (`.xlsx`), or PDF formats.
-- **Native Android APK**: Built with Capacitor, granting camera access and cleartext network security for local network and production servers.
-- **AI Assistant**: *Not implemented* (Roadmap enhancement).
+### Authentication
+- **Employee Login**: Authenticate via Employee Code / Email and Password / PIN.
+- **Credential Hashing**: Password/PIN security enforced using `bcrypt` salting and hashing algorithms.
+- **JWT Token Management**: Secure token-based session handling with persistent client-side storage (`AsyncStorage` / `SecureStore`).
+- **Account Registration**: Self-service registration with employee details, designation, department, shift timing, and PIN creation.
+- **Forgot Password**: Password/PIN reset flow for credential recovery.
+
+### Employee Management
+- **Profile Hub**: View personal information, employee code, department, role, shift start/end times, and weekly off days.
+- **Profile Updates**: Update email, phone number, department, and designation.
+- **Profile Photo**: Avatar display with direct photo upload and update capability.
+- **Face Biometric Registration**: Guided registration process capturing facial imagery to generate persistent 128-dimensional biometric embeddings.
+
+### Attendance
+- **Biometric Punch In**: Real-time camera feed capture with face matching verification against stored database embeddings. Automated late status tracking (`ON TIME` vs `LATE`).
+- **Biometric Punch Out**: Face-verified clock-out with automatic calculation of total working hours (`HHh MMm`).
+- **Attendance History & Log**: Filterable attendance history displaying daily clocking logs, status badges, working hours, and location data.
+- **Interactive Calendar View**: Monthly grid navigation allowing date selection to inspect punch records for any given day.
+- **Location Tracking**: Geo-location latitude/longitude recording for punch events.
+
+### Leave Management
+- **Leave Request**: Submit leave applications specifying request date, leave type, and detailed justification.
+- **Leave History & Status**: Track real-time status of leave requests (`Pending`, `Approved`, `Rejected`).
+- **Manager Approval**: Manager interface for reviewing and taking action on employee leave applications.
+
+### Missed Punch
+- **Missed Punch Request**: Submit corrections for forgotten punch-in or punch-out events with date, target time, and explanation.
+- **Request History**: Monitor missed punch request approval states.
+
+### Notifications
+- **Real-Time Alerts**: Receive immediate notifications for punch events, request approvals, request rejections, and late alerts.
+- **Read/Unread Tracking**: Visual unread status indicators with one-click "Mark All as Read" action.
+
+### AI Assistant
+- **Biometric AI Engine**: Integrated 128-dimensional facial feature extraction engine processing luminance distribution, multi-channel RGB color histograms, and spatial frequency moments.
+- **Verification Confidence**: Returns numerical match confidence percentage for every biometric attempt.
+
+### Dashboard
+- **KPI Summary Cards**: Real-time stats display for Present days, Late arrivals, Leave counts, and Missed punches.
+- **Today's Status Banner**: Dynamic state display reflecting current punch state (Not Punched, Punched In, Punched Out).
+- **Quick Action Hub**: Instant access to Punch In, Punch Out, Face Registration, and Request submission.
+- **Weekly Trend Charts**: Attendance activity summary visualization.
 
 ---
 
-## 3. APPLICATION WORKFLOW
+## 3. TECHNOLOGY STACK
 
-### Employee Onboarding & Registration Flow
-
-```mermaid
-flowchart TD
-    A[Employee] --> B[Open Registration]
-    B --> C[Submit Details Name, Email, Badge ID, PIN]
-    C --> D[Account Created in PostgreSQL]
-    D --> E[Open Face Registration]
-    E --> F[Capture Camera Frame]
-    F --> G[Extract 128D Embedding Vector]
-    G --> H[Save Embedding to face_registrations Table]
-    H --> I[Redirect to Login]
-```
-
-### Biometric Punch In Flow
-
-```mermaid
-flowchart TD
-    A[Employee Dashboard] --> B[Click Biometric Punch In]
-    B --> C[Camera Preview Opens]
-    C --> D[Capture Live Face Frame]
-    D --> E[Send Image Payload to Backend /api/punch]
-    E --> F[Compute Cosine Similarity vs Stored Embeddings]
-    F -->|Match Confidence >= 60%| G[Verify Active Punch Record]
-    F -->|Match Failed| H[Display Verification Failed Error]
-    G --> I[Create attendance Log Entry]
-    I --> J[Return Success & Refresh Dashboard]
-```
-
-### Biometric Punch Out Flow
-
-```mermaid
-flowchart TD
-    A[Employee Dashboard] --> B[Click Biometric Punch Out]
-    B --> C[Camera Preview Opens]
-    C --> D[Capture Live Face Frame]
-    D --> E[Send Payload to Backend /api/attendance/punch-out]
-    E --> F[Backend Face Verification]
-    F -->|Verified| G[Locate Open Punch In Record]
-    G --> H[Calculate Working Hours: Punch Out - Punch In]
-    H --> I[Update DB record: Punch Out Time & Working Hours]
-    I --> J[Update Dashboard KPIs]
-```
-
-### Attendance Calendar & History Flow
-
-```mermaid
-flowchart TD
-    A[Navigation Bar] --> B[Open Attendance History]
-    B --> C[Fetch Monthly Calendar API /api/attendance/calendar]
-    C --> D[Render Interactive Day Grid]
-    D --> E[Select Specific Date e.g. 2026-08-10]
-    E --> F[Query Date API /api/attendance/date/2026-08-10]
-    F --> G[Display Detailed Card: Punch Times, Hours, Status]
-```
+| Category | Technology | Version | Purpose |
+|---|---|---|---|
+| **Frontend Framework** | React | `19.2.3` | UI Component Framework |
+| **Mobile & Web Engine** | React Native / React Native Web | `0.86.2` / `0.21.2` | Cross-platform core runtime |
+| **App Platform** | Expo | `~57.0.10` | Web & Mobile application bundler |
+| **Styling** | NativeWind / CSS | `^4.2.6` | Tailwind-inspired mobile styling |
+| **Navigation** | React Navigation (Stack & Tabs) | `^7.10.18` / `^7.18.14` | Navigation routing & tab bar |
+| **Mobile Container** | Capacitor (Android) | `^6.2.0` | Native Android bridge & plugin wrapper |
+| **Native Plugins** | `@capacitor/camera`, `@capacitor/preferences` | `^6.1.0` / `^6.0.0` | Native device hardware APIs |
+| **Primary Backend** | Node.js / Express | `^4.19.2` | REST API service on Port 8000 |
+| **Secondary Backend** | Python / FastAPI | `>=0.100.0` | Analytics & document export service on Port 8002 |
+| **Primary Database** | PostgreSQL (Supabase) | `pg ^8.12.0` | Cloud database persistence |
+| **Secondary Database** | SQLite | Built-in / SQLAlchemy | Embedded fallback database |
+| **Authentication** | JWT (`jsonwebtoken` / `pyjwt`), `bcrypt` | `^9.0.2` / `^5.1.1` | Token auth & PIN encryption |
+| **Image Processing** | `jpeg-js`, `pngjs`, Pillow, NumPy | `^0.4.4` / `^7.0.0` | Image array decoding & matrix computation |
+| **Document Export** | CSV, Excel (`openpyxl`), PDF (`reportlab`) | `>=3.1.0` / `>=4.0.0` | Report generation utilities |
 
 ---
 
 ## 4. SYSTEM ARCHITECTURE
 
-```
-+------------------------------------+        +------------------------------------+
-|          React Web Application     |        |      Capacitor Android Application |
-|  (Expo React Native Web - Port 8081)|        |       (Package: com.harmony.aiatt) |
-+------------------------------------+        +------------------------------------+
-                   |                                           |
-                   +-------------------+   +-------------------+
-                                       |   |
-                                       v   v
-                      +----------------------------------+
-                      |         Backend REST API         |
-                      |   (Node.js Express - Port 8000 / |
-                      |    Python FastAPI - Port 8002)   |
-                      +----------------------------------+
-                                       |
-                                       v
-                      +----------------------------------+
-                      |     PostgreSQL Database          |
-                      |   (Hosted on Supabase Cloud)     |
-                      +----------------------------------+
-```
+```mermaid
+flowchart TB
+    subgraph Clients["Client Layer"]
+        A["Expo Web Application\n(Port 8081)"]
+        B["Capacitor Native Android Application\n(com.harmony.aiattendance)"]
+    end
 
-### Layer Responsibilities
+    subgraph ServiceLayer["Application Service Layer"]
+        C["Root Unified Server Launcher\n(start-all.js)"]
+    end
 
-- **Frontend (Web & Mobile UI)**: Manages UI rendering, navigation state, local session storage (`AsyncStorage` / `SecureStore`), and camera feed capture.
-- **Backend API**: Handles authentication, password hashing (`bcrypt`), JWT token validation, 128D face feature extraction, cosine similarity matrix comparison, working hours computation, and business logic execution.
-- **Database (Supabase PostgreSQL)**: Holds persistent tables for employees, face embeddings, attendance records, leave requests, and notifications.
-- **Android Runtime (Capacitor)**: Packages the compiled web application into a native Android wrapper, exposing camera permissions and cleartext network configuration.
+    subgraph BackendLayer["Backend REST APIs"]
+        D["Node.js Express Server\n(Port 8000)\nserver.js"]
+        E["Python FastAPI Server\n(Port 8002)\nmain.py"]
+    end
+
+    subgraph CoreServices["Backend Engines"]
+        F["Biometric Face Engine\n(128D Cosine Similarity)"]
+        G["JWT Auth & Security"]
+        H["Report Generation\n(CSV / XLSX / PDF)"]
+    end
+
+    subgraph DataLayer["Database Persistence"]
+        I[("Supabase PostgreSQL\nCloud Database")]
+        J[("SQLite Local DB\n(attendance.db)")]
+    end
+
+    A -->|HTTP / REST API| D
+    B -->|HTTP / Native Camera API| D
+    C -->|Spawns & Monitors| D
+    C -->|Spawns & Monitors| A
+    D -->|Executes| F
+    D -->|Validates| G
+    D -->|Queries / Writes| I
+    E -->|Generates| H
+    E -->|Queries / Writes| J
+```
 
 ---
 
-## 5. TECHNOLOGY STACK
+## 5. PROJECT STRUCTURE
 
-| Layer | Technology |
-|---|---|
-| **Web Frontend** | React 19.2.3, React Native Web 0.21.2, Expo 57.0.10, NativeWind, React Navigation 7.x |
-| **Mobile Runtime** | Capacitor 6.2.0 (`@capacitor/android`, `@capacitor/camera`, `@capacitor/preferences`) |
-| **Backend Primary** | Node.js Express 4.19 (`server.js` on Port 8000) |
-| **Backend Secondary** | Python 3.13 FastAPI 0.100+ (`main.py` on Port 8002) |
-| **Database** | PostgreSQL on Supabase (`db.hgtwhgnschadrwhtimne.supabase.co`) & SQLite fallback |
-| **Authentication** | JSON Web Tokens (`jsonwebtoken` / `pyjwt`), `bcrypt` PIN hashing |
-| **Face Recognition Engine** | Multi-channel histogram & spatial frequency moment grids (128D vectors), Cosine Similarity |
-| **Document Exporting** | CSV, Excel (`openpyxl` / custom builder), PDF (`reportlab`) |
-| **Build Tools** | Expo Web Metro Bundler, Gradle 8.x (`gradlew.bat`), Capacitor CLI |
-
----
-
-## 6. PROJECT STRUCTURE
-
-```
-F:\Attendence\
-├── attendance-app/                # Main Web & Expo Frontend Project
+```text
+F:\Attendence
+│
+├── attendance-app/                 # Main Web & Expo Frontend Application
 │   ├── api/
-│   │   ├── client.ts              # Production API Client & Storage Logic
-│   │   └── mock-data.ts           # Re-exports only (Purged of mock arrays)
+│   │   └── client.ts               # API Client, HTTP requests, Storage management
+│   ├── assets/                     # Application visual assets and icons
 │   ├── components/
-│   │   └── BottomTabBar.tsx       # Bottom Navigation Bar Component
+│   │   └── BottomTabBar.tsx        # Custom Bottom Navigation Bar
 │   ├── screens/
 │   │   ├── AttendanceDetailsScreen.tsx
 │   │   ├── AttendanceHistoryScreen.tsx
@@ -174,34 +154,30 @@ F:\Attendence\
 │   │   ├── NewRequestScreen.tsx
 │   │   └── NotificationsScreen.tsx
 │   ├── theme/
-│   │   └── ThemeContext.tsx       # Application Light/Dark Color Token Context
-│   ├── App.tsx                    # React Navigation Stack Container
-│   ├── package.json               # Expo Dependencies & Scripts
-│   └── run_frontend.bat           # Frontend Launcher Batch Script
+│   │   └── ThemeContext.tsx        # Design tokens & color theme manager
+│   ├── App.tsx                     # Main App Component & Stack Navigation setup
+│   ├── app.json                    # Expo project configuration
+│   ├── metro.config.js             # Metro bundler web configuration
+│   └── package.json                # App dependencies & run scripts
 │
-├── attendance-apk/                # Standalone Android Application Folder
-│   ├── android/                   # Native Android Studio Project
-│   │   └── app/build/outputs/apk/
-│   │       ├── debug/app-debug.apk
-│   │       └── release/app-release.apk
-│   ├── releases/                  # Copy Directory for Generated APKs
-│   │   ├── harmony-attendance-debug.apk
-│   │   └── harmony-attendance-release.apk
-│   ├── src/
-│   │   └── config/
-│   │       └── api.ts             # Dynamic Host IP Resolution for Android
-│   ├── public/                    # HTML Index Template
-│   ├── capacitor.config.js        # Capacitor Configuration File
-│   ├── capacitor.config.json      # Capacitor JSON Config
-│   └── package.json               # Android Packaging Dependencies
+├── attendance-service/             # Express Bridge Starter Service
+│   ├── server.js                   # Entry script redirecting to backend/server.js
+│   └── package.json
 │
-├── backend/                       # Production Backend Service
+├── attendance-apk/                 # Native Android Build Configuration
+│   ├── android/                    # Native Android Studio Project (Gradle)
+│   ├── releases/                   # Output folder for generated APK files
+│   ├── src/config/api.ts           # Dynamic backend IP configuration for Android
+│   ├── capacitor.config.json       # Capacitor configuration settings
+│   └── package.json                # Capacitor CLI & Android build scripts
+│
+├── backend/                        # Primary Express & Python Backend Directory
 │   ├── app/
-│   │   ├── database.py            # SQLAlchemy PostgreSQL/SQLite Connection
-│   │   ├── face_engine.py         # 128D Face Feature Extraction Engine
-│   │   └── reports.py             # CSV / Excel / PDF Report Generator
+│   │   ├── database.py             # Python SQLite DB connector
+│   │   ├── face_engine.py          # Python 128D face extraction implementation
+│   │   └── reports.py              # PDF, Excel, and CSV export generators
 │   ├── config/
-│   │   └── database.js            # Node.js pg Pool Connection for Supabase
+│   │   └── database.js             # Node.js pg Pool connection for Supabase
 │   ├── controllers/
 │   │   ├── attendanceController.js
 │   │   ├── authController.js
@@ -210,414 +186,444 @@ F:\Attendence\
 │   │   ├── managerController.js
 │   │   ├── notificationController.js
 │   │   └── requestController.js
-│   ├── routes/                    # Express Router Endpoints
-│   ├── main.py                    # FastAPI Entry Script (Port 8002)
-│   ├── server.js                  # Express Entry Script (Port 8000)
+│   ├── database/
+│   │   └── schema.sql              # Supabase PostgreSQL database schema definition
+│   ├── middleware/
+│   │   ├── authMiddleware.js       # JWT validation middleware
+│   │   └── errorMiddleware.js      # Global error handling middleware
+│   ├── routes/
+│   │   ├── attendanceRoutes.js
+│   │   ├── authRoutes.js
+│   │   ├── employeeRoutes.js
+│   │   ├── faceRoutes.js
+│   │   ├── managerRoutes.js
+│   │   ├── notificationRoutes.js
+│   │   └── requestRoutes.js
+│   ├── main.py                     # Python FastAPI server entry point (Port 8002)
+│   ├── server.js                   # Node.js Express server entry point (Port 8000)
 │   ├── package.json
 │   ├── requirements.txt
-│   └── test_all_endpoints.js      # Automated Verification Test Suite
+│   ├── test_all_endpoints.js       # Express endpoint verification script
+│   └── test_face_extractor.js      # Biometric face engine test script
 │
-├── copy_dist.js                   # Build Asset Copy Utility
-├── run_backend.bat                # Backend Launcher Batch Script
-├── run_frontend.bat               # Frontend Launcher Batch Script
-└── README.md                      # Complete System Documentation
+├── copy_dist.js                    # Asset syncing utility script
+├── run_backend.bat                 # Windows batch script for backend launcher
+├── run_frontend.bat                # Windows batch script for frontend launcher
+├── start-all.js                    # Unified single-command launcher script
+└── README.md                       # Project documentation
 ```
 
 ---
 
-## 7. DATABASE
+## 6. APPLICATION MODULES
 
-The application connects to a Supabase PostgreSQL database (`db.hgtwhgnschadrwhtimne.supabase.co`).
-
-### Entity Relationship Diagram
-
-```
-+------------------+         +-----------------------+
-|    employees     | 1     * |   face_registrations  |
-|------------------|<--------|-----------------------|
-| employee_id (PK) |         | face_id (PK)          |
-| employee_code    |         | employee_id (FK)      |
-| full_name        |         | embedding (TEXT)      |
-| email            |         +-----------------------+
-| password         |
-| department       |         +-----------------------+
-| designation      | 1     * |      attendance       |
-| profile_photo    |---------|-----------------------|
-| shift_start      |         | attendance_id (PK)    |
-| shift_end        |         | employee_id (FK)      |
-+------------------+         | attendance_date       |
-   |                         | punch_in / punch_out  |
-   |                         | working_hours         |
-   | 1                       | attendance_status     |
-   |                         +-----------------------+
-   | *                       
-   +----------------+        +-----------------------+
-   |  notifications |        |  attendance_requests  |
-   |----------------|        |-----------------------|
-   | notification_id|        | request_id (PK)       |
-   | employee_id(FK)|        | employee_id (FK)      |
-   | title, message |        | request_type, status  |
-   +----------------+        +-----------------------+
-```
-
-### Table Definitions
-- **`employees`**: Stores core profile data, credential hashes, office shifts, and role information.
-- **`face_registrations`**: Stores 128-dimensional JSON stringified face feature vectors associated with employees.
-- **`attendance`**: Log table storing daily punch in/out timestamps, calculated working hours, status (`ON TIME`, `LATE`, `ABSENT`), location, and remarks.
-- **`attendance_requests`**: Stores leave requests, missed punch corrections, and early exit reasons submitted by employees.
-- **`notifications`**: Stores system alerts, request status notifications, and attendance reminders.
+- **Authentication Module**: Login with email/code, account registration with shift selection, password recovery, and JWT token refresh.
+- **Face Registration Module**: Live camera feed capture with multi-angle positional feedback to generate reference biometric feature vectors.
+- **Dashboard Module**: Quick stats overview (present/late/leave counts), current punch status indicator, quick action shortcuts, and weekly activity summary.
+- **Attendance Module**: Face-verified Punch In, Punch Out, daily working hours calculation, and location logging.
+- **Attendance History & Calendar Module**: Filterable history list and interactive month grid to inspect past attendance entries by date.
+- **Leave & Request Module**: Application interface for submitting leave requests and missed-punch adjustments with status tracking.
+- **Manager Approval Module**: Administrative interface to review, approve, or reject employee attendance requests.
+- **Notification Module**: Real-time alert list with read/unread state management.
+- **Profile Module**: Personal info viewer, profile photo uploader, and account detail editor.
 
 ---
 
-## 8. ENVIRONMENT VARIABLES
+## 7. ATTENDANCE WORKFLOW
 
-Ensure the environment files contain valid production configurations:
+```mermaid
+flowchart TD
+    A["Employee Registration\n(Name, Code, Email, PIN)"] --> B["Face Registration\n(Capture live photo)"]
+    B --> C["Extract 128D Vector &\nSave to Database"]
+    C --> D["Employee Login\n(JWT Authentication)"]
+    D --> E["Dashboard"]
+    E --> F{"Punch Action"}
+    F -->|Punch In| G["Face Capture Screen"]
+    F -->|Punch Out| H["Face Capture Screen"]
+    G --> I["Cosine Similarity Verification\n(Threshold >= 0.65)"]
+    H --> I
+    I -->|Verification Succeeded| J["Create / Update Attendance Record"]
+    I -->|Verification Failed| K["Display Error &\nDeny Punch"]
+    J --> L["Calculate Hours & Late Status"]
+    L --> M["Update Dashboard & History"]
+```
 
-### `backend/.env`
+---
+
+## 8. FACE RECOGNITION
+
+The project implements a custom biometric feature extraction and cosine similarity verification engine (`backend/services/faceService.js` and `backend/app/face_engine.py`).
+
+### Feature Extraction Pipeline
+1. **Frame Capture & Decoding**: Accepts base64 image strings from Expo Camera or Capacitor Camera, decoding JPEG/PNG byte streams into raw RGBA pixel arrays.
+2. **Spatial Resampling**: Normalizes input frames to a standard $64 \times 64$ grid matrix.
+3. **Multi-Channel Color Histograms**: Computes 32-bin histograms for Red, Green, and Blue channels ($32 \times 3 = 96$ features).
+4. **Spatial Luminance Moments**: Divides the $64 \times 64$ matrix into a $4 \times 4$ sub-region grid (16 tiles). Computes mean luminance ($\mu$) and standard deviation ($\sigma$) for each sub-region ($16 \times 2 = 32$ features).
+5. **Vector Normalization**: Concatenates histograms and spatial moments into a 128-dimensional vector, applying $L_2$ Euclidean normalization:
+   $$\hat{\mathbf{v}} = \frac{\mathbf{v}}{\|\mathbf{v}\|_2}$$
+6. **Vector Storage**: Stores normalized 128D floating-point arrays as JSON strings in the `face_registrations` table keyed by `employee_id`.
+
+### Verification Logic
+Verification compares a live capture vector ($\mathbf{A}$) against the stored reference vector ($\mathbf{B}$) using **Cosine Similarity**:
+$$\text{Cosine Similarity} = \frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$$
+
+- **Match Threshold**: Default threshold set to `0.65` (configurable via `FACE_MATCH_THRESHOLD`).
+- **Confidence Output**: Scores $\ge 0.65$ map to a confidence rating between 65.0% and 99.9%, authorizing the attendance punch. Scores below $0.65$ reject the attempt.
+
+---
+
+## 9. API
+
+### Base URL
+- Node.js Express Backend: `http://localhost:8000`
+- Python FastAPI Backend: `http://localhost:8002`
+
+### Key Endpoints Table
+
+| Method | Endpoint | Purpose | Auth Required |
+|---|---|---|---|
+| `GET` | `/api/health` | Service and database health check | No |
+| `POST` | `/api/auth/register` | Register new employee account | No |
+| `POST` | `/api/auth/login` | Authenticate employee & return JWT | No |
+| `POST` | `/api/auth/logout` | Invalidate authenticated session | Yes |
+| `GET` | `/api/auth/me` | Fetch authenticated user profile | Yes |
+| `GET` | `/api/employees/profile` | Retrieve profile information | Yes |
+| `PUT` | `/api/employees/profile` | Update profile information | Yes |
+| `GET` | `/api/employees` | List registered employees | Yes |
+| `POST` | `/api/face/register` | Register 128D face embedding | Yes |
+| `POST` | `/api/face/verify` | Verify live face capture frame | Yes |
+| `GET` | `/api/face` | Retrieve employee face registration status | Yes |
+| `POST` | `/api/punch` | Unified biometric Punch In / Punch Out | Yes |
+| `POST` | `/api/attendance/punch-in` | Biometric Punch In | Yes |
+| `POST` | `/api/attendance/punch-out` | Biometric Punch Out | Yes |
+| `GET` | `/api/attendance/today` | Retrieve today's punch record | Yes |
+| `GET` | `/api/attendance/history` | Retrieve attendance history logs | Yes |
+| `GET` | `/api/attendance/calendar` | Retrieve monthly attendance calendar grid | Yes |
+| `GET` | `/api/attendance/date/:date` | Retrieve attendance record for specific date | Yes |
+| `GET` | `/api/dashboard` | Fetch dashboard KPI summaries | Yes |
+| `GET` | `/api/dashboard/charts` | Fetch weekly trend analytics | Yes |
+| `GET` | `/api/requests` | List leave & missed-punch requests | Yes |
+| `POST` | `/api/requests` | Submit new leave or missed punch request | Yes |
+| `GET` | `/api/manager/requests` | List pending requests for manager review | Yes (Manager) |
+| `POST` | `/api/manager/requests/:id/action` | Approve or reject employee request | Yes (Manager) |
+| `GET` | `/api/notifications` | Retrieve employee notifications | Yes |
+| `PUT` | `/api/notifications/read-all` | Mark all notifications as read | Yes |
+| `GET` | `/api/reports/export` | Export attendance report (CSV / XLSX / PDF) | Yes |
+
+---
+
+## 10. ENVIRONMENT CONFIGURATION
+
+To run the project, configure environment variables in your `.env` files. **Never commit production credentials or secret keys to version control.**
+
+### Backend Environment Variables (`backend/.env`)
 ```env
-# PostgreSQL Database Connection URL (Supabase)
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
-
-# Authentication Secret Key
-JWT_SECRET=your_super_secret_jwt_key_here
-
-# Backend Service Port
+# Server Port
 PORT=8000
+
+# Supabase PostgreSQL Connection String
+DATABASE_URL=postgresql://your_db_user:your_db_password@your_db_host:5432/your_db_name
+
+# Authentication JWT Secret
+JWT_SECRET=your_jwt_secret_key_here
+
+# Biometric Verification Threshold (Default: 0.65)
+FACE_MATCH_THRESHOLD=0.65
 ```
 
-### `attendance-app/.env` (Optional)
+### Frontend Environment Variables (`attendance-app/.env`)
 ```env
-# Configurable API Base URL for Web Application
+# API Base URL for Web Application
 EXPO_PUBLIC_API_URL=http://localhost:8000
-VITE_API_BASE_URL=http://localhost:8000
 ```
 
 ---
 
-## 9. INSTALLATION
+## 11. INSTALLATION
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher
-- **Python**: v3.10 or higher
-- **Java Development Kit (JDK)**: JDK 17 or higher
-- **Android Studio / Android SDK**: API Level 33+ (For Android builds)
+- **Node.js**: `v18.0.0` or higher
+- **npm**: `v9.0.0` or higher
+- **Python**: `v3.10` or higher (if running FastAPI backend)
+- **Android Studio & SDK**: (Optional, for Android APK builds)
 
-### 1. Backend Setup
+### 1. Root Setup
 ```bash
-cd backend
+cd F:\Attendence
 npm install
+```
+
+### 2. Frontend Setup
+```bash
+cd F:\Attendence\attendance-app
+npm install
+```
+
+### 3. Primary Node Backend Setup
+```bash
+cd F:\Attendence\backend
+npm install
+```
+
+### 4. Optional Python Backend Setup
+```bash
+cd F:\Attendence\backend
 pip install -r requirements.txt
 ```
 
-### 2. Web Application Setup
-```bash
-cd attendance-app
-npm install
-```
-
-### 3. Android Application Setup
-```bash
-cd attendance-apk
-npm install
-```
-
 ---
 
-## 10. RUNNING THE BACKEND
+## 12. RUNNING THE PROJECT
 
-### Option A: Express Backend (Primary - Port 8000)
+### Unified Startup (Recommended)
+You can launch both the Node.js Express backend and the Expo Web application simultaneously using the unified launcher:
+
 ```bash
-cd backend
-node server.js
+cd F:\Attendence
+npm run dev
 ```
-Or execute the Windows launcher:
+
+Or execute the Windows launcher script:
 ```cmd
 run_backend.bat
 ```
-- **Port**: `8000`
-- **Health Check**: `http://localhost:8000/api/health`
-
-### Option B: FastAPI Backend (Secondary - Port 8002)
-```bash
-cd backend
-python -m uvicorn main:app --host 0.0.0.0 --port 8002 --reload
-```
-- **Swagger Documentation**: `http://localhost:8002/docs`
-
----
-
-## 11. RUNNING THE WEB APPLICATION
-
-```bash
-cd attendance-app
-npx expo start --port 8081 --web
-```
-Or execute the Windows launcher:
+and
 ```cmd
 run_frontend.bat
 ```
-- **Local URL**: `http://localhost:8081`
 
----
+### Individual Service Launch
 
-## 12. RUNNING ANDROID
-
-To test the Android application on an attached physical Android device or emulator:
-
-1. Configure host machine IP in `attendance-apk/src/config/api.ts` (e.g. `http://172.20.10.3:8000`).
-2. Sync compiled assets to Android native wrapper:
-   ```bash
-   cd attendance-app
-   npx expo export --platform web
-   node ../copy_dist.js
-   cd ../attendance-apk
-   npx cap sync android
-   ```
-3. Launch in Android Studio:
-   ```bash
-   npx cap open android
-   ```
-
----
-
-## 13. APK BUILD
-
-### 1. Debug APK Build
+#### 1. Node.js Express Backend (Port 8000)
 ```bash
-cd attendance-apk/android
-.\gradlew.bat assembleDebug
+cd F:\Attendence\backend
+npm run dev
 ```
-- **Generated Debug APK Path**:
-  `attendance-apk/android/app/build/outputs/apk/debug/app-debug.apk`
+- Expected URL: `http://localhost:8000`
 
-### 2. Release APK Build
+#### 2. Expo Web Frontend (Port 8081)
 ```bash
-cd attendance-apk/android
-.\gradlew.bat assembleRelease
+cd F:\Attendence\attendance-app
+npm run dev
 ```
-- **Generated Release APK Path**:
-  `attendance-apk/android/app/build/outputs/apk/release/app-release.apk`
+- Expected URL: `http://localhost:8081`
 
-### 3. Release Directory Copies
-Copies of the built APKs are stored in:
-- `attendance-apk/releases/harmony-attendance-debug.apk` (Size: `9.9 MB`)
-- `attendance-apk/releases/harmony-attendance-release.apk` (Size: `8.3 MB`)
-
----
-
-## 14. API DOCUMENTATION
-
-| Method | Endpoint | Purpose | Authentication |
-|---|---|---|---|
-| `GET` | `/api/health` | Backend & Database connection health check | Public |
-| `POST` | `/api/auth/register` | Register a new employee account | Public |
-| `POST` | `/api/auth/login` | Authenticate employee with PIN/email & password | Public |
-| `POST` | `/api/auth/logout` | Invalidate employee session | Bearer Token |
-| `GET` | `/api/auth/me` | Fetch authenticated user context | Bearer Token |
-| `GET` | `/api/employees/profile` | Retrieve employee profile data | Bearer Token |
-| `PUT` | `/api/employees/profile` | Update profile information | Bearer Token |
-| `GET` | `/api/employees` | List active employees (paginated) | Bearer Token |
-| `POST` | `/api/face/register` | Register 128D biometric face embedding | Bearer Token |
-| `POST` | `/api/face/verify` | Verify real-time face frame against DB | Bearer Token |
-| `POST` | `/api/punch` | Perform biometric Punch In or Punch Out | Bearer Token |
-| `POST` | `/api/attendance/punch-in` | Execute Punch In with face verification | Bearer Token |
-| `POST` | `/api/attendance/punch-out` | Execute Punch Out with face verification | Bearer Token |
-| `GET` | `/api/dashboard` | Fetch KPI stats and today's attendance | Bearer Token |
-| `GET` | `/api/dashboard/charts` | Fetch weekly trend analytics & stats | Bearer Token |
-| `GET` | `/api/attendance/history` | Retrieve historical attendance records | Bearer Token |
-| `GET` | `/api/attendance/calendar` | Retrieve monthly attendance grid | Bearer Token |
-| `GET` | `/api/attendance/date/:dateStr` | Retrieve attendance record for date | Bearer Token |
-| `GET` | `/api/requests` | List leave & correction requests | Bearer Token |
-| `POST` | `/api/requests` | Submit new attendance request | Bearer Token |
-| `PUT` | `/api/manager/requests/:id/action` | Approve or reject request | Bearer Token |
-| `GET` | `/api/notifications` | Fetch employee notifications | Bearer Token |
-| `PUT` | `/api/notifications/read-all` | Mark all notifications as read | Bearer Token |
-| `GET` | `/api/reports/export` | Download CSV, XLSX, or PDF report | Bearer Token |
+#### 3. Python FastAPI Analytics Backend (Optional - Port 8002)
+```bash
+cd F:\Attendence\backend
+python -m uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+```
+- Expected URL: `http://localhost:8002`
 
 ---
 
-## 15. AUTHENTICATION
+## 13. HEALTH CHECK
 
-1. **Registration**: Employee enters name, badge ID, email, phone, department, designation, and PIN.
-2. **Login**: Credentials verified against `employees` table using `bcrypt` PIN hash comparison.
-3. **JWT Issue**: Server responds with signed JWT token stored securely in `AsyncStorage` (Web) or `SecureStore` (Android).
-4. **Session Auto-Validation**: On app startup, `validateSession()` queries `/api/auth/me`. If valid, the user automatically enters `EmployeeDashboard`.
-5. **Protected APIs**: HTTP requests include `Authorization: Bearer <token>` header.
-
----
-
-## 16. FACE RECOGNITION
-
-1. **Feature Extraction Engine (`app/face_engine.py`)**:
-   - Resizes captured frame to standard `64x64`.
-   - Computes multi-channel RGB histograms (96 features).
-   - Computes spatial grid sub-region means and standard deviations (32 features).
-   - Constructs a normalized 128-dimensional floating-point vector.
-2. **Face Registration**:
-   - Base64 image captured via live webcam or Android camera.
-   - Vector stored as JSON in `face_registrations` table.
-3. **Face Verification**:
-   - Captured frame vector compared against employee's registered vector using **Cosine Similarity**:
-     $$\text{Similarity} = \frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$$
-   - Match threshold set to $\ge 60\%$ confidence.
-
----
-
-## 17. ATTENDANCE LOGIC
-
-- **Punch In Rules**:
-  - Requires real camera capture & face embedding match.
-  - Punch In time recorded as server ISO timestamp.
-  - If Punch In occurs after shift grace time (`09:15 AM`), status marked as `LATE`.
-  - Duplicate Punch In on the same calendar day is rejected by backend.
-- **Punch Out Rules**:
-  - Requires face verification.
-  - Matches today's active Punch In record.
-  - Total working hours calculated automatically: $\text{Punch Out} - \text{Punch In}$.
-- **Everyday Punch Support**: Punch In and Punch Out operate on every calendar day without hardcoded weekday blocks.
-
----
-
-## 18. ATTENDANCE CALENDAR
-
-- **Monthly Grid**: Queries `/api/attendance/calendar?month=X&year=Y`.
-- **Date Lookup**: Tapping any calendar day (e.g. `2026-08-10`) fetches real DB records via `/api/attendance/date/2026-08-10`.
-- **Display Details**: Date, day label, Punch In time, Punch Out time, total working hours, status (`ON TIME`, `LATE`, `ABSENT`), location, and remarks.
-
----
-
-## 19. REQUEST WORKFLOW
-
-1. Employee selects request type (`Leave`, `Early Exit`, `Missed Punch In`, `Correction`).
-2. Request payload submitted to `/api/requests` and saved to `attendance_requests`.
-3. HR/Manager reviews request via `/api/manager/requests/:id/action`.
-4. Employee receives notification upon decision update.
-
----
-
-## 20. NOTIFICATIONS
-
-- System logs alerts for Punch In, Punch Out, request approvals, and late arrivals.
-- Unread badge counter updates dynamically.
-- Tapping "Mark All Read" triggers `PUT /api/notifications/read-all`.
-
----
-
-## 21. SECURITY
-
-- **Password Hashing**: PINs hashed with SHA-256 / `bcrypt` salt.
-- **Environment Isolation**: Database credentials strictly maintained inside `backend/.env`.
-- **Prepared SQL Statements**: All database operations use parameterized queries (`$1`, `$2` or `?`) preventing SQL injection.
-- **Cleartext Traffic Control**: Android cleartext traffic restricted to explicitly allowed development host IPs via `network_security_config.xml`.
-
----
-
-## 22. ERROR HANDLING
-
-- **Camera Failures**: Helpful user feedback displayed if camera permission is denied or video feed fails.
-- **Biometric Mismatch**: Friendly error message: *"Face biometric verification failed. Please position your face inside the reticle."*
-- **Network Outages**: Retry logic and offline queueing mechanism (`syncOfflinePunches()`) for temporary connectivity drops.
-
----
-
-## 23. TESTING
-
-Automated test script `backend/test_all_endpoints.js` validates complete system functionality:
+Verify backend server and database status:
 
 ```bash
-cd backend
+curl http://localhost:8000/api/health
+```
+
+### Expected Response
+```json
+{
+  "success": true,
+  "message": "Database connection is working cleanly",
+  "timestamp": "2026-08-11T14:45:58.000Z"
+}
+```
+
+---
+
+## 14. WEB APPLICATION
+
+- **Framework**: Built with Expo Web and React Native Web.
+- **Browser Compatibility**: Supported on modern evergreen browsers including Chrome, Edge, Firefox, and Safari.
+- **Responsive Layout**: Designed for seamless transition across desktop displays, laptops, tablets, and mobile web viewports.
+- **Custom Touch & Scroll CSS**: Clamps viewport height and enables `-webkit-overflow-scrolling: touch` for natural touch momentum scrolling on mobile browsers.
+- **Navigation**: Managed via React Navigation Stack and bottom tab components.
+
+---
+
+## 15. ANDROID APPLICATION
+
+The native Android version is located in `attendance-apk/`.
+
+### Android Build Steps
+1. Navigate to the APK directory:
+   ```bash
+   cd F:\Attendence\attendance-apk
+   ```
+2. Sync compiled assets to native Android container:
+   ```bash
+   npm run cap:sync
+   ```
+3. Build Debug APK:
+   ```bash
+   npm run build:apk:debug
+   ```
+   *Output APK location*: `attendance-apk/android/app/build/outputs/apk/debug/app-debug.apk`
+
+4. Build Release APK:
+   ```bash
+   npm run build:apk:release
+   ```
+   *Output APK location*: `attendance-apk/android/app/build/outputs/apk/release/app-release.apk`
+
+---
+
+## 16. CAPACITOR
+
+Capacitor (`@capacitor/core` version `6.2.0`) encapsulates the web client inside a native Android container.
+
+### Configured Plugins & Capabilities
+- **`@capacitor/camera`**: Enables hardware camera access for real-time face registration and punch verification.
+- **`@capacitor/preferences`**: Provides persistent key-value storage for authentication state.
+- **Network Security Configuration**: Cleartext HTTP traffic is explicitly enabled in `AndroidManifest.xml` and `network_security_config.xml` to allow communication with local development servers (`http://172.20.10.3:8000`).
+- **Package Identifier**: `com.harmony.aiattendance`
+
+---
+
+## 17. DATABASE
+
+The application uses **Supabase PostgreSQL** as its primary cloud database.
+
+### Schema Entities (`backend/database/schema.sql`)
+- **`employees`**: Core employee table storing `employee_code`, `full_name`, `email`, hashed `password`, `department`, `designation`, `shift_start`, `shift_end`, and `status`.
+- **`face_registrations`**: Stores stringified 128D face embedding JSON vectors linked to `employee_id`.
+- **`attendance`**: Daily attendance entries containing `attendance_date`, `punch_in`, `punch_out`, `working_hours`, `attendance_status`, latitude/longitude, and remarks.
+- **`attendance_requests`**: Requests for leave, missed punches, and corrections with approval status.
+- **`notifications`**: System alerts and request notifications with `is_read` status.
+- **`office_locations`**: Geo-fencing office location coordinates and allowed radius.
+- **`managers` & `manager_actions`**: Manager directory and request processing logs.
+- **`login_sessions`**: Active JWT login session registry.
+- **`holidays`**: Public holiday calendar records.
+
+---
+
+## 18. SECURITY
+
+- **JWT Authentication**: Secured route protection using Bearer JWT tokens.
+- **PIN/Password Encryption**: Credentials hashed using `bcrypt` before storage.
+- **Parameterized SQL Queries**: All database interactions use prepared statements (`$1`, `$2`) to prevent SQL injection vulnerabilities.
+- **CORS Configuration**: Restricts API origin access to verified web and mobile domains.
+- **Protected API Middleware**: Middleware validates token signatures before granting access to employee or manager resources.
+
+---
+
+## 19. ERROR HANDLING
+
+- **Biometric Mismatch Handling**: Provides user error messages when facial confidence scores fall below threshold.
+- **Camera Fallback**: Friendly user interface messaging when camera access permissions are blocked.
+- **Network Errors**: Error alert handling for lost API connectivity or server unavailability.
+- **Validation**: Schema-level input validation on authentication and request submission endpoints.
+
+---
+
+## 20. RESPONSIVE DESIGN
+
+- **Cross-Platform Layouts**: Card and grid components adapt seamlessly to viewports ranging from small mobile screens to 4K desktop displays.
+- **Viewport Height Clamping**: Custom CSS rules (`#root`, React Native Web containers) prevent layout clipping and unwanted document scrollbars on web browsers.
+- **Touch-Friendly Controls**: Interactive elements designed for touch targets meeting standard accessibility guidelines.
+
+---
+
+## 21. TESTING
+
+Application logic and endpoint validation are performed using verification test scripts:
+
+### Running Express API Test Suite
+```bash
+cd F:\Attendence\backend
 node test_all_endpoints.js
 ```
 
-### Verified Test Cases
-- Health API & DB connectivity
-- Employee registration & login
-- Profile retrieval & JWT validation
-- Face registration & embedding verification
-- Dashboard KPI calculations
-- Punch In & duplicate punch prevention
-- Punch Out & working hours calculation
-- Calendar date query & history logs
-- Request submission & manager approval
-- Notifications sync & logout
+### Running Face Engine Test Suite
+```bash
+cd F:\Attendence\backend
+node test_face_extractor.js
+```
+
+*Note: Application testing is currently performed through test script execution and manual end-to-end user verification.*
 
 ---
 
-## 24. TROUBLESHOOTING
+## 22. BUILD / DEPLOYMENT
 
-### 1. Android Cannot Connect to Backend
-- **Cause**: Using `http://localhost:8000` inside Android emulator or device.
-- **Solution**: Configure your computer's local LAN IP (e.g., `http://172.20.10.3:8000`) in `attendance-apk/src/config/api.ts`.
+### Production Web Build
+```bash
+cd F:\Attendence\attendance-app
+npx expo export --platform web
+```
+The compiled web static files are placed in `attendance-app/dist/`.
 
-### 2. PostgreSQL Connection Error
-- **Cause**: Invalid DSN options or credentials in `backend/.env`.
-- **Solution**: Ensure `DATABASE_URL` matches your Supabase connection string.
-
-### 3. Camera Feed Blank on Web
-- **Cause**: Browser permissions blocking camera access.
-- **Solution**: Ensure HTTPS or `localhost` context and grant camera permission in browser settings.
-
----
-
-## 25. PRODUCTION DEPLOYMENT
-
-- **Web Application**: Deploy compiled `dist` folder to Vercel, Netlify, or AWS S3.
-- **Backend API**: Host `server.js` or `main.py` on Render, Railway, AWS EC2, or DigitalOcean with HTTPS.
-- **Database**: Production PostgreSQL instance hosted on Supabase Cloud.
-- **Android APK**: Sign `app-release.apk` with keytool/apksigner for Google Play Store distribution.
+### Android Production APK Build
+```bash
+cd F:\Attendence\attendance-apk\android
+.\gradlew.bat assembleRelease
+```
+The compiled APK file is saved to `attendance-apk/android/app/build/outputs/apk/release/app-release.apk` and copied to `attendance-apk/releases/harmony-attendance-release.apk`.
 
 ---
 
-## 26. VERSION INFORMATION
+## 23. TROUBLESHOOTING
 
-- **Node.js**: `v18+` / `v22+`
-- **Python**: `3.13.1`
-- **React**: `19.2.3`
-- **Expo**: `57.0.10`
-- **Capacitor**: `6.2.0`
-- **FastAPI**: `0.100+`
-- **Express**: `4.19.2`
-- **PostgreSQL**: `15+` (Supabase)
+### 1. Port 8000 or 8081 Already in Use
+If the backend or frontend fails to start due to port conflicts, execute the following commands in PowerShell to inspect and free the occupied ports:
 
----
+```powershell
+# Inspect Port 8000
+netstat -ano | findstr :8000
 
-## 27. CURRENT STATUS
+# Inspect Port 8081
+netstat -ano | findstr :8081
 
-| Feature | Status | Notes |
-|---|:---:|---|
-| **Web Application** | ✅ Completed | Fully responsive on desktop & mobile browsers. |
-| **Authentication** | ✅ Completed | JWT & PIN authentication. |
-| **Face Registration** | ✅ Completed | 128D feature vector stored in PostgreSQL. |
-| **Face Verification** | ✅ Completed | Real-time cosine similarity verification. |
-| **Punch In** | ✅ Completed | Real-time face-verified Punch In. |
-| **Punch Out** | ✅ Completed | Real-time face-verified Punch Out & hours calculation. |
-| **Attendance** | ✅ Completed | Live DB records & status tracking. |
-| **Calendar** | ✅ Completed | Interactive monthly calendar & date details. |
-| **Requests** | ✅ Completed | Leave & correction requests with manager approval. |
-| **Notifications** | ✅ Completed | System alerts & unread badge counters. |
-| **Android APK** | ✅ Completed | Native Android APK (`app-debug.apk` & `app-release.apk`). |
+# Terminate process by PID
+taskkill /PID <PID_NUMBER> /F
+```
+Alternatively, running `npm run dev` from the project root automatically frees lingering ports prior to launch.
+
+### 2. Android App Cannot Connect to Backend API
+- **Issue**: Android device fails to communicate with `http://localhost:8000`.
+- **Solution**: Android containers treat `localhost` as the device itself. Update host IP in `attendance-apk/src/config/api.ts` to your machine's local wireless/LAN IP address (e.g., `http://172.20.10.3:8000`).
+
+### 3. Database Connection Failure
+- **Issue**: API returns `500 Database connection error`.
+- **Solution**: Verify that `DATABASE_URL` in `backend/.env` is correctly populated with your Supabase PostgreSQL connection URI and that your IP is allowed.
 
 ---
 
-## 28. FUTURE ENHANCEMENTS
+## 24. DEVELOPMENT GUIDELINES
 
-- **GPS Geofencing Validation**: Configurable office radius validation.
-- **Push Notifications**: Firebase Cloud Messaging (FCM) integration for Android.
-- **Liveness Detection**: Infrared/blink detection for advanced anti-spoofing.
-- **AI Voice Assistant**: Voice-activated attendance status queries.
+- **Do Not Commit Secrets**: Keep `.env` files out of git repositories.
+- **Centralized API Config**: Perform all API requests using `attendance-app/api/client.ts`.
+- **Database Integrity**: Execute database migrations cleanly through `backend/database/schema.sql`.
+- **Maintain UI Consistency**: Reuse existing component patterns from `attendance-app/components/` and color tokens in `theme/ThemeContext.tsx`.
 
 ---
 
-## 29. CONTRIBUTING
+## 25. ROADMAP
 
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/NewFeature`).
-3. Commit changes (`git commit -m 'Add NewFeature'`).
-4. Push to the branch (`git push origin feature/NewFeature`).
+The following features represent planned future enhancements:
+- **Advanced Anti-Spoofing & Liveness Detection**: Infrared and blink detection algorithms.
+- **Firebase Push Notifications (FCM)**: Native mobile push notifications for request approvals.
+- **Role-Based Admin Management Portal**: Dedicated administrative portal for HR managers.
+- **Advanced Analytics & Reporting Dashboard**: Visual attendance heatmaps and export scheduling.
+- **Automated CI/CD Workflows**: GitHub Actions pipeline for continuous integration and automated APK compilation.
+
+---
+
+## 26. CONTRIBUTING
+
+1. Create a feature branch: `git checkout -b feature/your-feature-name`
+2. Commit your changes: `git commit -m "Add new feature"`
+3. Test your changes locally.
+4. Push to your branch: `git push origin feature/your-feature-name`
 5. Open a Pull Request.
 
 ---
 
-## 30. LICENSE
+## 27. LICENSE
 
-License: Not specified.
+License information has not yet been specified.
