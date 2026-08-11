@@ -3,10 +3,9 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAttendanceCalendar, getAttendanceByDate, getDashboard, getReportDownloadUrl, AttendanceRecord } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { BottomTabBar, getBottomTabBarHeight } from '../components/BottomTabBar';
+import { BottomTabBar } from '../components/BottomTabBar';
 
 type RootStackParamList = {
   Login: undefined;
@@ -46,7 +45,6 @@ const getDayNameStr = (dateStr: string) => {
 const AttendanceHistoryScreen = () => {
   const navigation = useNavigation<AttendanceHistoryScreenNavigation>();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const maxWidth = Math.min(width, 960);
 
@@ -195,7 +193,7 @@ const AttendanceHistoryScreen = () => {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: getBottomTabBarHeight(insets.bottom) }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: 90 }]} scrollEnabled={true} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
         <View style={[styles.maxWidth, { maxWidth }]}>
           {/* Month Navigation & Title Card */}
           <View style={[styles.filterCard, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]}>
@@ -501,9 +499,9 @@ const AttendanceHistoryScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, minHeight: 0, position: 'relative' },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
   scrollView: { flex: 1, minHeight: 0 },
-  header: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  header: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   headerInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerTitle: { fontSize: 18, fontWeight: '800' },

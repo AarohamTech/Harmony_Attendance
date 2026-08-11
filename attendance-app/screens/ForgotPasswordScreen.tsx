@@ -62,7 +62,7 @@ const ForgotPasswordScreen = () => {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentPadding}> 
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentPadding} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={true}> 
         <View style={styles.cardWrap}> 
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]}> 
             <Ionicons name="key-outline" size={48} color={colors.primary} style={{ marginBottom: 14 }} />
@@ -103,13 +103,13 @@ const ForgotPasswordScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  scrollView: { flex: 1 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
+  scrollView: { flex: 1, minHeight: 0 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconButton: { width: 36, height: 36, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 18, fontWeight: '700' },
-  contentPadding: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 60, flexGrow: 1 },
+  contentPadding: { paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40, flexGrow: 1, justifyContent: 'center' },
   cardWrap: { width: '100%', maxWidth: 420, alignSelf: 'center' },
   card: { borderWidth: 1, borderRadius: 24, padding: 20, alignItems: 'center' },
   logo: { width: 72, height: 72, borderRadius: 16, marginBottom: 14 },

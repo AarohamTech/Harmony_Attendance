@@ -1,0 +1,10 @@
+{
+  "name": "harmony-attendance-root",
+  "version": "1.0.0",
+  "description": "Harmony AI Attendance - Single Port Unified Application Launcher",
+  "main": "start-all.js",
+  "scripts": {
+    "start": "node start-all.js",
+    "dev": "node start-all.js"
+  }
+}

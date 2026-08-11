@@ -96,7 +96,7 @@ const CreateEmployeeAccountScreen = () => {
       style={[styles.screen, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={true}>
         <View style={styles.headerWrap}>
           <Pressable style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={20} color={colors.primary} />
@@ -259,8 +259,8 @@ const CreateEmployeeAccountScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  scrollView: { flex: 1 },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
+  scrollView: { flex: 1, minHeight: 0 },
   scrollContent: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 60, flexGrow: 1 },
   headerWrap: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 18 },
   iconButton: { width: 40, height: 40, borderRadius: 999, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },

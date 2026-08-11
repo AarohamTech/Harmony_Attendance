@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getProfile, updateProfile } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { BottomTabBar, getBottomTabBarHeight } from '../components/BottomTabBar';
+import { BottomTabBar } from '../components/BottomTabBar';
 
 type RootStackParamList = {
   Login: undefined;
@@ -25,36 +24,42 @@ type RootStackParamList = {
 
 type EditProfileNavigationProp = StackNavigationProp<RootStackParamList, 'EditProfile'>;
 
+const FALLBACK_AVATAR = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80';
+
 const EditProfileScreen = () => {
   const navigation = useNavigation<EditProfileNavigationProp>();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
 
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
   const [role, setRole] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    const sync = async () => {
-      try {
-        setLoading(true);
-        const profile = await getProfile();
-        if (profile) {
-          setName(profile.name);
-          setDepartment(profile.department);
-          setRole(profile.role);
-        }
-      } catch (err: any) {
-        setErrorMessage(err?.message ?? 'Failed to load profile.');
-      } finally {
-        setLoading(false);
+  const sync = useCallback(async () => {
+    try {
+      setLoading(true);
+      const profile = await getProfile();
+      if (profile) {
+        setName(profile.name);
+        setDepartment(profile.department);
+        setRole(profile.role);
+        setProfilePhoto(profile.profilePhoto || null);
       }
-    };
-    void sync();
+    } catch (err: any) {
+      setErrorMessage(err?.message ?? 'Failed to load profile.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void sync();
+    }, [sync])
+  );
 
   const onSave = async () => {
     try {
@@ -73,6 +78,8 @@ const EditProfileScreen = () => {
     }
   };
 
+  const avatarUri = profilePhoto && profilePhoto.trim() !== '' ? profilePhoto : FALLBACK_AVATAR;
+
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.outlineVariant }]}>
@@ -84,13 +91,13 @@ const EditProfileScreen = () => {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: getBottomTabBarHeight(insets.bottom) }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: 90 }]} scrollEnabled={true} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
         <View style={styles.maxWidth}>
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]}>
             <View style={styles.avatarSection}>
               <View style={styles.avatarWrap}>
                 <Image
-                  source={{ uri: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' }}
+                  source={{ uri: avatarUri }}
                   style={styles.avatar}
                 />
                 <Pressable
@@ -164,9 +171,9 @@ const EditProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, minHeight: 0, position: 'relative' },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
   scrollView: { flex: 1, minHeight: 0 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconButton: { width: 36, height: 36, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 18, fontWeight: '700' },

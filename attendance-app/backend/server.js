@@ -19,8 +19,28 @@ const employeeController = require('./controllers/employeeController');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Enable CORS and JSON parsing
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:8081',
+  'http://127.0.0.1:8081',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
+  'http://localhost:19006',
+  'http://localhost:8080'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+}));
+app.options('*', cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -99,7 +119,15 @@ app.get(['/api/reports/export', '/reports/export'], authMiddleware, (req, res) =
 app.use(errorMiddleware);
 
 // Start Server
-app.listen(PORT, () => {
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT EXCEPTION]', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[UNHANDLED REJECTION]', reason);
+});
+
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`===================================================`);
   console.log(`  Attendance Express Backend Server running on Port ${PORT}`);
   console.log(`  Health check: http://localhost:${PORT}/api/health`);

@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getProfile, logout } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { BottomTabBar, getBottomTabBarHeight } from '../components/BottomTabBar';
+import { BottomTabBar } from '../components/BottomTabBar';
 
 type RootStackParamList = {
   Login: undefined;
@@ -25,15 +24,16 @@ type RootStackParamList = {
 
 type EmployeeProfileScreenNavigation = StackNavigationProp<RootStackParamList, 'EmployeeProfile'>;
 
+const FALLBACK_AVATAR = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80';
+
 const EmployeeProfileScreen = () => {
   const navigation = useNavigation<EmployeeProfileScreenNavigation>();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const syncProfile = async () => {
+  const syncProfile = useCallback(async () => {
     setLoading(true);
     setErrorMessage(null);
 
@@ -45,11 +45,13 @@ const EmployeeProfileScreen = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    void syncProfile();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void syncProfile();
+    }, [syncProfile])
+  );
 
   const onLogout = async () => {
     try {
@@ -59,6 +61,8 @@ const EmployeeProfileScreen = () => {
       setErrorMessage(err?.message ?? 'Unable to log out.');
     }
   };
+
+  const profileImageUri = profile?.profilePhoto && profile.profilePhoto.trim() !== '' ? profile.profilePhoto : FALLBACK_AVATAR;
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
@@ -70,17 +74,17 @@ const EmployeeProfileScreen = () => {
               <Ionicons name="notifications-outline" size={22} color={colors.primary} />
             </Pressable>
             <Pressable style={[styles.avatarBubble, { backgroundColor: colors.secondaryContainer }]} onPress={() => navigation.navigate('EditProfile')}>
-              <Image source={{ uri: profile?.profilePhoto ?? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' }} style={styles.avatarImage} />
+              <Image source={{ uri: profileImageUri }} style={styles.avatarImage} />
             </Pressable>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: getBottomTabBarHeight(insets.bottom) }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: 90 }]} scrollEnabled={true} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
         <View style={styles.maxWidth}>
           <View style={[styles.profileHero, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]}>
             <View style={styles.heroAvatarWrap}>
-              <Image source={{ uri: profile?.profilePhoto ?? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' }} style={styles.heroAvatar} />
+              <Image source={{ uri: profileImageUri }} style={styles.heroAvatar} />
               <View style={[styles.verifiedBadge, { backgroundColor: colors.primary }]}>
                 <Ionicons name="checkmark" size={16} color={colors.white} />
               </View>
@@ -171,9 +175,9 @@ const EmployeeProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, minHeight: 0, position: 'relative' },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
   scrollView: { flex: 1, minHeight: 0 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   title: { fontSize: 18, fontWeight: '700' },
   topRightWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },

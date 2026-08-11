@@ -33,6 +33,14 @@ export type RootStackParamList = {
   NewRequest: undefined;
   Notifications: undefined;
   EditProfile: undefined;
+  PunchIn: { mode?: 'punch_in' | 'punch_out' | 'registration'; direction?: 'front' | 'left' | 'right' | 'up' | 'down' } | undefined;
+  PunchOut: { mode?: 'punch_in' | 'punch_out' | 'registration'; direction?: 'front' | 'left' | 'right' | 'up' | 'down' } | undefined;
+  Attendance: undefined;
+  Dashboard: undefined;
+  Leave: undefined;
+  LeaveRequest: undefined;
+  MissedPunch: undefined;
+  Settings: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -44,11 +52,11 @@ export default function App() {
     }
 
     const style = document.createElement('style');
+    style.id = 'harmony-app-web-styles';
     style.textContent = `
       html,
       body,
-      #root,
-      #root > div {
+      #root {
         width: 100%;
         height: 100%;
         margin: 0;
@@ -56,26 +64,74 @@ export default function App() {
         overflow: hidden;
       }
 
+      #root,
+      #root > div,
+      div[data-reactroot],
+      div[role="region"] {
+        width: 100%;
+        height: 100%;
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 1 0% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box;
+      }
+
+      /* React Navigation Scene Card Containers */
+      div[class*="r-pointerEvents-"],
+      div[class*="r-position-absolute"],
+      div[style*="position: absolute"] {
+        min-height: 0 !important;
+      }
+
+      /* Comprehensive React Native Web ScrollView Height Clamping & Touch Action */
       div[style*="overflow-y: auto"],
-      div[style*="overflow-y: scroll"] {
-        -webkit-overflow-scrolling: touch;
-        touch-action: pan-y;
-        overscroll-behavior-y: contain;
+      div[style*="overflow-y: scroll"],
+      div[class*="r-overflowY-auto"],
+      div[class*="r-overflowY-scroll"],
+      div[data-scrollable="true"] {
+        flex: 1 1 0% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
+        overscroll-behavior-y: contain !important;
+      }
+
+      /* Visible & Draggable Styled Web Scrollbars */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #2563eb;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #1d4ed8;
       }
     `;
     document.head.appendChild(style);
 
     return () => {
-      document.head.removeChild(style);
+      const existing = document.getElementById('harmony-app-web-styles');
+      if (existing) document.head.removeChild(existing);
     };
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1, height: '100%', minHeight: 0 }}>
+      <SafeAreaProvider style={{ flex: 1, height: '100%', minHeight: 0 }}>
         <ThemeProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
+            <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false, cardStyle: { flex: 1, height: '100%', minHeight: 0 } }}>
               <Stack.Screen
                 name="Login"
                 component={LoginScreen}
@@ -134,6 +190,50 @@ export default function App() {
               <Stack.Screen
                 name="EditProfile"
                 component={EditProfileScreen}
+                options={{ headerShown: false }}
+              />
+
+              {/* Route Aliases to support all navigation route names */}
+              <Stack.Screen
+                name="PunchIn"
+                component={FaceCaptureScreen}
+                initialParams={{ mode: 'punch_in' }}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="PunchOut"
+                component={FaceCaptureScreen}
+                initialParams={{ mode: 'punch_out' }}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Attendance"
+                component={AttendanceHistoryScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Dashboard"
+                component={EmployeeDashboardScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Leave"
+                component={AttendanceRequestsScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="LeaveRequest"
+                component={NewRequestScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="MissedPunch"
+                component={NewRequestScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Settings"
+                component={EmployeeProfileScreen}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>

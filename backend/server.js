@@ -19,9 +19,23 @@ const employeeController = require('./controllers/employeeController');
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Enable CORS for all origins, methods, and preflight requests
+const allowedOrigins = [
+  'http://localhost:8081',
+  'http://127.0.0.1:8081',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
+  'http://localhost:19006',
+  'http://localhost:8080'
+];
+
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
@@ -138,26 +152,44 @@ const startServer = (portToUse) => {
     console.log(`===================================================`);
   });
 
-  server.on('error', (err) => {
+  server.on('error', async (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.log(`Port ${portToUse} is in use. Automatically freeing port ${portToUse}...`);
+      console.log(`Port ${portToUse} is currently in use. Checking if existing backend is healthy...`);
       try {
-        const { execSync } = require('child_process');
-        if (process.platform === 'win32') {
-          execSync(`powershell -Command "Get-NetTCPConnection -LocalPort ${portToUse} -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }"`, { stdio: 'ignore' });
-        } else {
-          execSync(`npx kill-port ${portToUse}`, { stdio: 'ignore' });
-        }
-      } catch (e) {}
-
-      setTimeout(() => {
-        startServer(portToUse);
-      }, 1000);
+        const http = require('http');
+        const req = http.get(`http://localhost:${portToUse}/api/health`, (res) => {
+          if (res.statusCode === 200) {
+            console.log(`===================================================`);
+            console.log(`  Harmony AI Attendance Backend is ALREADY RUNNING on Port ${portToUse}`);
+            console.log(`  Health check: http://localhost:${portToUse}/api/health (HTTP 200)`);
+            console.log(`===================================================`);
+            process.exit(0);
+          } else {
+            console.error(`Port ${portToUse} is in use but health check returned status ${res.statusCode}. Exiting.`);
+            process.exit(1);
+          }
+        });
+        req.on('error', () => {
+          console.error(`Port ${portToUse} is in use by an unresponsive process. Exiting.`);
+          process.exit(1);
+        });
+      } catch (checkErr) {
+        console.error(`Port ${portToUse} is currently in use. Exiting.`);
+        process.exit(1);
+      }
     } else {
       console.error('Server error:', err);
     }
   });
 };
+
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT EXCEPTION]', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[UNHANDLED REJECTION]', reason);
+});
 
 startServer(PORT);
 

@@ -3,10 +3,9 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAttendanceHistory, getDashboard, AttendanceRecord } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { BottomTabBar, getBottomTabBarHeight } from '../components/BottomTabBar';
+import { BottomTabBar } from '../components/BottomTabBar';
 
 type RootStackParamList = {
   Login: undefined;
@@ -28,7 +27,6 @@ type AttendanceDetailsScreenNavigation = StackNavigationProp<RootStackParamList,
 const AttendanceDetailsScreen = () => {
   const navigation = useNavigation<AttendanceDetailsScreenNavigation>();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const contentMaxWidth = Math.min(width, 960);
 
@@ -75,13 +73,13 @@ const AttendanceDetailsScreen = () => {
               <Ionicons name="notifications-outline" size={22} color={colors.primary} />
             </Pressable>
             <Pressable onPress={() => navigation.navigate('EmployeeProfile')}>
-              <Image source={{ uri: operator?.profilePhoto }} style={styles.avatar} />
+              <Image source={{ uri: operator?.profilePhoto && operator.profilePhoto.trim() !== '' ? operator.profilePhoto : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' }} style={styles.avatar} />
             </Pressable>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingBottom: getBottomTabBarHeight(insets.bottom) }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingBottom: 90 }]} scrollEnabled={true} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
         <View style={[styles.maxWidthContainer, { maxWidth: contentMaxWidth }]}>
           {isLoading ? (
             <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 24 }} />
@@ -91,7 +89,7 @@ const AttendanceDetailsScreen = () => {
                 style={[styles.profileHeader, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]}
                 onPress={() => navigation.navigate('EmployeeProfile')}
               >
-                <Image source={{ uri: operator?.profilePhoto }} style={styles.profileImage} />
+                <Image source={{ uri: operator?.profilePhoto && operator.profilePhoto.trim() !== '' ? operator.profilePhoto : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80' }} style={styles.profileImage} />
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.profileName, { color: colors.onSurface }]}>{operator?.name}</Text>
                   <View style={styles.chipRow}>
@@ -222,9 +220,9 @@ const AttendanceDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, minHeight: 0, position: 'relative' },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
   scrollView: { flex: 1, minHeight: 0 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topLeftWrap: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   topRightWrap: { flexDirection: 'row', gap: 8, alignItems: 'center' },

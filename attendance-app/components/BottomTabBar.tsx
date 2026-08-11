@@ -48,7 +48,7 @@ const TABS: TabConfig[] = [
     routeName: 'EmployeeDashboard',
     activeIcon: 'home',
     inactiveIcon: 'home-outline',
-    activeRoutes: ['EmployeeDashboard'],
+    activeRoutes: ['EmployeeDashboard', 'Dashboard'],
   },
   {
     key: 'attendance',
@@ -56,7 +56,7 @@ const TABS: TabConfig[] = [
     routeName: 'AttendanceHistory',
     activeIcon: 'finger-print',
     inactiveIcon: 'finger-print-outline',
-    activeRoutes: ['AttendanceHistory', 'AttendanceDetails'],
+    activeRoutes: ['AttendanceHistory', 'AttendanceDetails', 'Attendance', 'PunchIn', 'PunchOut', 'FaceCapture'],
   },
   {
     key: 'requests',
@@ -64,7 +64,7 @@ const TABS: TabConfig[] = [
     routeName: 'AttendanceRequests',
     activeIcon: 'document-text',
     inactiveIcon: 'document-text-outline',
-    activeRoutes: ['AttendanceRequests', 'NewRequest'],
+    activeRoutes: ['AttendanceRequests', 'NewRequest', 'Leave', 'LeaveRequest', 'MissedPunch'],
   },
   {
     key: 'profile',
@@ -72,7 +72,7 @@ const TABS: TabConfig[] = [
     routeName: 'EmployeeProfile',
     activeIcon: 'person',
     inactiveIcon: 'person-outline',
-    activeRoutes: ['EmployeeProfile', 'EditProfile'],
+    activeRoutes: ['EmployeeProfile', 'EditProfile', 'Settings'],
   },
 ];
 
@@ -143,10 +143,7 @@ export const BottomTabBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: Platform.OS === 'web' ? ('fixed' as any) : 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    flexShrink: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -157,10 +154,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 8,
-    zIndex: 999,
   },
   tabItem: {
     flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 2,

@@ -190,6 +190,13 @@ class FaceService {
     return result.rows[0] || null;
   }
 
+  async updateEmployeeProfilePhoto(employeeId, profilePhoto) {
+    await db.query(
+      'UPDATE employees SET profile_photo = $1 WHERE employee_id = $2',
+      [profilePhoto, employeeId]
+    );
+  }
+
   async verifyFace(employeeId, liveFaceInput) {
     const registeredRecord = await this.getFace(employeeId);
 

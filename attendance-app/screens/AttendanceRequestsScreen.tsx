@@ -27,7 +27,6 @@ type AttendanceRequestsScreenNavigation = StackNavigationProp<RootStackParamList
 
 const tabs = ['PENDING', 'APPROVED', 'REJECTED'] as const;
 type TabKey = (typeof tabs)[number];
-const FAB_BOTTOM_OFFSET = 86;
 const FAB_SIZE = 56;
 
 const AttendanceRequestsScreen = () => {
@@ -84,8 +83,11 @@ const AttendanceRequestsScreen = () => {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.contentPadding,
-          { paddingBottom: Math.max(getBottomTabBarHeight(insets.bottom), FAB_BOTTOM_OFFSET + FAB_SIZE) },
+          { paddingBottom: 110 },
         ]}
+        scrollEnabled={true}
+        showsVerticalScrollIndicator={true}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={[styles.maxWidth, { maxWidth }]}>
           <Text style={[styles.heading, { color: colors.onSurface }]}>Request Management</Text>
@@ -164,7 +166,10 @@ const AttendanceRequestsScreen = () => {
         </View>
       </ScrollView>
 
-      <Pressable style={[styles.fab, { backgroundColor: colors.primary }]} onPress={() => navigation.navigate('NewRequest')}>
+      <Pressable
+        style={[styles.fab, { backgroundColor: colors.primary, bottom: getBottomTabBarHeight(insets.bottom) + 16 }]}
+        onPress={() => navigation.navigate('NewRequest')}
+      >
         <Ionicons name="add" size={28} color="#ffffff" />
       </Pressable>
 
@@ -174,9 +179,9 @@ const AttendanceRequestsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, minHeight: 0, position: 'relative' },
+  screen: { flex: 1, height: '100%', minHeight: 0, position: 'relative' },
   scrollView: { flex: 1, minHeight: 0 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topLeftWrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   brandCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
   rejectText: { fontSize: 12, fontStyle: 'italic' },
   emptyState: { borderWidth: 1, borderRadius: 16, padding: 20, alignItems: 'center' },
   emptyText: { fontSize: 14, fontWeight: '700' },
-  fab: { position: 'absolute', bottom: 86, right: 18, width: 56, height: 56, borderRadius: 16, alignItems: 'center', justifyContent: 'center', elevation: 4, zIndex: 95 },
+  fab: { position: 'absolute', right: 18, width: 56, height: 56, borderRadius: 16, alignItems: 'center', justifyContent: 'center', elevation: 4, zIndex: 95 },
 });
 
 export default AttendanceRequestsScreen;

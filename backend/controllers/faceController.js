@@ -16,6 +16,18 @@ class FaceController {
 
       const payload = typeof faceData === 'string' ? faceData : JSON.stringify(faceData);
       const registered = await faceService.registerFace(employeeId, payload);
+      let profilePhoto = null;
+      if (typeof faceData === 'string') {
+        if (faceData.startsWith('data:image/')) {
+          profilePhoto = faceData;
+        } else if (faceData.length > 100 && !faceData.startsWith('[')) {
+          profilePhoto = `data:image/jpeg;base64,${faceData}`;
+        }
+      }
+
+      if (profilePhoto) {
+        await faceService.updateEmployeeProfilePhoto(employeeId, profilePhoto);
+      }
 
       return res.status(200).json({
         success: true,
@@ -23,7 +35,8 @@ class FaceController {
         data: {
           face_id: registered.face_id,
           registered_on: registered.registered_on,
-          last_updated: registered.last_updated
+          last_updated: registered.last_updated,
+          profile_photo: profilePhoto
         }
       });
     } catch (err) {

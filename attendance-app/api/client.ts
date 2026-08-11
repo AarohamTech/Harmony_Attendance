@@ -88,32 +88,15 @@ export type NotificationRecord = {
   unread: boolean;
 };
 
-// Base URL resolution: Default to port 8000 Express Server with Host IP support for Android
+// Base URL resolution: Unified Port 8081 Architecture (Relative URL on Web)
 const getApiBaseUrl = () => {
   if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
-  if (typeof process !== 'undefined' && process.env?.VITE_API_BASE_URL) {
-    return process.env.VITE_API_BASE_URL;
+  if (Platform.OS === 'web') {
+    return 'http://localhost:8000';
   }
-  if (typeof window !== 'undefined' && (window as any).API_BASE_URL) {
-    return (window as any).API_BASE_URL;
-  }
-  const isCapacitor = typeof window !== 'undefined' && (
-    (window as any).Capacitor ||
-    window.location.protocol === 'capacitor:' ||
-    window.location.protocol === 'file:'
-  );
-  if (isCapacitor || Platform.OS === 'android') {
-    return 'http://172.20.10.3:8000';
-  }
-  if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location) {
-    const host = window.location.hostname || 'localhost';
-    if (host !== 'localhost' && host !== '127.0.0.1') {
-      return `http://${host}:8000`;
-    }
-  }
-  return 'http://172.20.10.3:8000';
+  return 'http://10.0.2.2:8000';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -151,7 +134,7 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   } catch (netErr: any) {
     console.error(`[API FETCH ERROR] Request to ${url} failed:`, netErr);
     
-    // Retry fallback between localhost and 127.0.0.1
+    // Retry fallback between localhost and 127.0.0.1 if absolute URL was used
     let fallbackUrl = url;
     if (url.includes('localhost')) {
       fallbackUrl = url.replace('localhost', '127.0.0.1');
@@ -165,10 +148,10 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
         response = await fetch(fallbackUrl, { ...options, headers });
       } catch (retryErr: any) {
         console.error(`[API FETCH RETRY ERROR] Request to ${fallbackUrl} failed:`, retryErr);
-        throw new Error(`Unable to connect to attendance server (${url}). Please ensure backend (node server.js) is running on port 8000.`);
+        throw new Error('Unable to connect to attendance server. Please make sure the backend is running.');
       }
     } else {
-      throw new Error(`Unable to connect to attendance server (${url}). Please ensure backend (node server.js) is running on port 8000.`);
+      throw new Error('Unable to connect to attendance server. Please make sure the backend is running.');
     }
   }
 

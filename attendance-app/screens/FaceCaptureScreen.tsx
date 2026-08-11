@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, TextInput, View, ActivityIndicator, Platform } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, View, ActivityIndicator, Platform, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -179,7 +179,7 @@ const FaceCaptureScreen = () => {
         </View>
       </View>
 
-      <View style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1, padding: 16, paddingBottom: 40, alignItems: 'center', justifyContent: 'center' }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={true}>
         {!success ? (
           <View style={styles.cameraBox}>
             <View style={[styles.cameraFrame, { borderColor: isScanning ? colors.green : colors.primary }]}>
@@ -276,14 +276,15 @@ const FaceCaptureScreen = () => {
             </Pressable>
           </View>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
+  scrollView: { flex: 1, minHeight: 0 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconButton: { width: 36, height: 36, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 18, fontWeight: '800' },

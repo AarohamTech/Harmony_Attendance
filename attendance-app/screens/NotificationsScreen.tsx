@@ -3,10 +3,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View, ActivityIndicator } from
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNotifications, markAllNotificationsRead, NotificationRecord } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
-import { BottomTabBar, getBottomTabBarHeight } from '../components/BottomTabBar';
+import { BottomTabBar } from '../components/BottomTabBar';
 
 type RootStackParamList = {
   Login: undefined;
@@ -28,7 +27,6 @@ type NotificationsNavigationProp = StackNavigationProp<RootStackParamList, 'Noti
 const NotificationsScreen = () => {
   const navigation = useNavigation<NotificationsNavigationProp>();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
 
   const [items, setItems] = useState<NotificationRecord[]>([]);
   const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
@@ -78,7 +76,7 @@ const NotificationsScreen = () => {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: getBottomTabBarHeight(insets.bottom) }]}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentPadding, { paddingBottom: 90 }]} scrollEnabled={true} showsVerticalScrollIndicator={true} keyboardShouldPersistTaps="handled">
         <View style={styles.maxWidth}>
           <View style={[styles.filterBar, { backgroundColor: colors.surfaceContainer, borderColor: colors.outlineVariant }]}>
             <Pressable
@@ -164,9 +162,9 @@ const NotificationsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, minHeight: 0, position: 'relative' },
+  screen: { flex: 1, height: '100%', minHeight: 0 },
   scrollView: { flex: 1, minHeight: 0 },
-  topBar: { borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
+  topBar: { flexShrink: 0, borderBottomWidth: 1, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 2 },
   topBarInner: { height: 56, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   iconButton: { width: 36, height: 36, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 18, fontWeight: '800' },
