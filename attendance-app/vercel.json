@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/((?!assets/|_expo/|favicon\\.ico|.*\\.(js|css|json|png|jpg|jpeg|gif|svg|ico|ttf|woff|woff2|eot)$).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
