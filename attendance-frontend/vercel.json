@@ -1,11 +1,13 @@
 {
-  "version": 2,
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist",
+  "devCommand": "expo",
   "cleanUrls": true,
-  "trailingSlash": false,
+  "framework": null,
   "rewrites": [
     {
-      "source": "/((?!assets/|_expo/|favicon\\.ico|.*\\.(js|css|json|png|jpg|jpeg|gif|svg|ico|ttf|woff|woff2|eot)$).*)",
-      "destination": "/index.html"
+      "source": "/:path*",
+      "destination": "/"
     }
   ]
 }
