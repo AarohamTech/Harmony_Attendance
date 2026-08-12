@@ -263,7 +263,7 @@ export const login = async (input: string, password?: string): Promise<Session> 
       employeeId: emp.badge_id || emp.code || emp.employee_code || String(emp.id),
       name: emp.name || emp.full_name,
       email: emp.email,
-      role: emp.role || emp.designation || 'Employee',
+      role: emp.role || 'Employee',
       department: emp.department || 'General',
       token: data.access_token || data.token,
       profilePhoto: emp.profile_photo,
@@ -299,7 +299,7 @@ export const validateSession = async (): Promise<Session | null> => {
     if (me && me.success !== false) {
       session.name = me.full_name || me.name || session.name;
       session.email = me.email || session.email;
-      session.role = me.designation || me.role || session.role;
+      session.role = me.role || session.role || 'Employee';
       session.department = me.department || session.department;
       session.employeeId = me.employee_code || me.code || session.employeeId;
       session.profilePhoto = me.profile_photo || session.profilePhoto;
@@ -628,7 +628,7 @@ export const getProfile = async (): Promise<Operator | null> => {
     email: user.email || session.email,
     phone: user.phone || 'N/A',
     department: user.department || session.department,
-    role: user.designation || user.role || session.role,
+    role: user.role || 'Employee',
     avatar: user.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
     profilePhoto: user.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
     locationLabel: user.office_name || user.location_label || 'Padalkar Colony',

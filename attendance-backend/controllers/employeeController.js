@@ -5,7 +5,7 @@ class EmployeeController {
     try {
       const employeeId = req.user.employee_id;
       const empRes = await db.query(
-        `SELECT e.employee_id, e.employee_code, e.full_name, e.email, e.phone, e.department, e.designation, e.profile_photo, e.shift_start, e.shift_end, e.grace_time, e.weekly_off, o.office_name, o.address, o.latitude, o.longitude
+        `SELECT e.employee_id, e.employee_code, e.full_name, e.email, e.phone, e.department, e.designation, e.role, e.profile_photo, e.shift_start, e.shift_end, e.grace_time, e.weekly_off, o.office_name, o.address, o.latitude, o.longitude
          FROM employees e
          LEFT JOIN office_locations o ON e.office_id = o.office_id
          WHERE e.employee_id = $1`,
@@ -30,7 +30,7 @@ class EmployeeController {
           phone: emp.phone,
           department: emp.department,
           designation: emp.designation,
-          role: emp.designation,
+          role: emp.role || 'Employee',
           profile_photo: emp.profile_photo,
           office_name: emp.office_name || 'Padalkar Colony',
           location_label: emp.office_name || 'Padalkar Colony',
@@ -50,13 +50,14 @@ class EmployeeController {
   async updateProfile(req, res, next) {
     try {
       const employeeId = req.user.employee_id;
-      const { name, full_name, department, designation, role, phone, profile_photo } = req.body;
+      const { name, full_name, department, designation, phone, profile_photo } = req.body;
 
       const newName = (full_name || name)?.trim();
       const newDept = department?.trim();
-      const newRole = (designation || role)?.trim();
+      const newDesig = designation?.trim();
       const newPhone = phone?.trim();
 
+      // Normal self-profile update DOES NOT allow changing 'role' (app permission level)
       const updateRes = await db.query(
         `UPDATE employees
          SET full_name = COALESCE($1, full_name),
@@ -65,8 +66,8 @@ class EmployeeController {
              phone = COALESCE($4, phone),
              profile_photo = COALESCE($5, profile_photo)
          WHERE employee_id = $6
-         RETURNING employee_id, employee_code, full_name, email, phone, department, designation, profile_photo`,
-        [newName || null, newDept || null, newRole || null, newPhone || null, profile_photo || null, employeeId]
+         RETURNING employee_id, employee_code, full_name, email, phone, department, designation, role, profile_photo`,
+        [newName || null, newDept || null, newDesig || null, newPhone || null, profile_photo || null, employeeId]
       );
 
       return res.status(200).json({
@@ -87,7 +88,7 @@ class EmployeeController {
       const search = req.query.search ? `%${req.query.search.trim()}%` : null;
 
       let queryText = `
-        SELECT employee_id, employee_code, full_name, email, phone, department, designation, status, created_at
+        SELECT employee_id, employee_code, full_name, email, phone, department, designation, role, status, created_at
         FROM employees
       `;
       const queryParams = [];

@@ -12,6 +12,7 @@ const attendanceRoutes = require('./routes/attendanceRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 const managerRoutes = require('./routes/managerRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const attendanceController = require('./controllers/attendanceController');
 const employeeController = require('./controllers/employeeController');
@@ -110,6 +111,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/manager', managerRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Additional endpoints matching client requirements
 app.post('/api/punch', authMiddleware, attendanceController.punchUnified);

@@ -2,6 +2,8 @@ const db = require('../config/database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET || '08ce0113a09b73847b1980bb73db7bf9f62edc71b9488663bcf48bc5704f65e3cd0aa30be9aaf02b704f45f73d772c1d72260e274e9f715d0dfc392c4682c1ab';
+
 class AuthController {
   async register(req, res, next) {
     try {
@@ -15,8 +17,7 @@ class AuthController {
         password,
         pin,
         department,
-        designation,
-        role
+        designation
       } = req.body;
 
       const employeeCodeInput = (employee_code || employeeId || '').trim();
@@ -24,8 +25,11 @@ class AuthController {
       const emailInput = (email || `${employeeCodeInput.toLowerCase()}@company.com`).trim();
       const rawPassword = (password || pin || '1234').trim();
       const deptInput = (department || 'Engineering').trim();
-      const desigInput = (designation || role || 'Employee').trim();
+      const desigInput = (designation || 'Employee').trim();
       const phoneInput = (phone || '').trim();
+
+      // SECURITY REQUIREMENT: Normal public registration ALWAYS creates role = 'Employee'
+      const assignedRole = 'Employee';
 
       if (!employeeCodeInput || !fullNameInput) {
         return res.status(400).json({
@@ -41,7 +45,7 @@ class AuthController {
       );
 
       if (checkRes.rows.length > 0) {
-        return res.status(400).json({
+        return res.status(409).json({
           success: false,
           message: 'An employee with this ID or Email address already exists.'
         });
@@ -56,13 +60,13 @@ class AuthController {
 
       const weeklyOffInput = (req.body.weekly_off || 'Monday').trim();
 
-      // Save employee to PostgreSQL
+      // Save employee to PostgreSQL with role = 'Employee'
       const insertRes = await db.query(
         `INSERT INTO employees
-         (employee_code, full_name, email, phone, password, department, designation, office_id, shift_start, shift_end, grace_time, weekly_off, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, '09:00:00', '18:00:00', '09:15:00', $9, 'Active')
-         RETURNING employee_id, employee_code, full_name, email, department, designation, created_at`,
-        [employeeCodeInput, fullNameInput, emailInput, phoneInput, hashedPassword, deptInput, desigInput, officeId, weeklyOffInput]
+         (employee_code, full_name, email, phone, password, department, designation, role, office_id, shift_start, shift_end, grace_time, weekly_off, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, '09:00:00', '18:00:00', '09:15:00', $10, 'Active')
+         RETURNING employee_id, employee_code, full_name, email, department, designation, role, created_at`,
+        [employeeCodeInput, fullNameInput, emailInput, phoneInput, hashedPassword, deptInput, desigInput, assignedRole, officeId, weeklyOffInput]
       );
 
       const newEmp = insertRes.rows[0];
@@ -72,7 +76,17 @@ class AuthController {
         message: 'Employee registered successfully',
         data: {
           employee_id: newEmp.employee_id,
-          employee: newEmp
+          employee: {
+            id: newEmp.employee_id,
+            employee_id: newEmp.employee_id,
+            badge_id: newEmp.employee_code,
+            code: newEmp.employee_code,
+            name: newEmp.full_name,
+            email: newEmp.email,
+            department: newEmp.department,
+            designation: newEmp.designation,
+            role: newEmp.role || 'Employee'
+          }
         }
       });
     } catch (err) {
@@ -94,7 +108,7 @@ class AuthController {
         });
       }
 
-      // Find employee by email, employee_code, or PIN match
+      // Find employee by email or employee_code
       const empRes = await db.query(
         `SELECT * FROM employees
          WHERE email = $1 OR employee_code = $1`,
@@ -129,19 +143,22 @@ class AuthController {
         });
       }
 
-      // Generate JWT Token
+      const empRole = emp.role || 'Employee';
+
+      // Generate JWT Token with role field
       const tokenPayload = {
         employee_id: emp.employee_id,
         employee_code: emp.employee_code,
         email: emp.email,
         full_name: emp.full_name,
         department: emp.department,
-        designation: emp.designation
+        designation: emp.designation,
+        role: empRole
       };
 
       const token = jwt.sign(
         tokenPayload,
-        process.env.JWT_SECRET || '08ce0113a09b73847b1980bb73db7bf9f62edc71b9488663bcf48bc5704f65e3cd0aa30be9aaf02b704f45f73d772c1d72260e274e9f715d0dfc392c4682c1ab',
+        JWT_SECRET,
         { expiresIn: '7d' }
       );
 
@@ -165,7 +182,7 @@ class AuthController {
           name: emp.full_name,
           email: emp.email,
           department: emp.department,
-          role: emp.designation,
+          role: empRole,
           designation: emp.designation,
           profile_photo: emp.profile_photo
         }
@@ -203,7 +220,7 @@ class AuthController {
     try {
       const employeeId = req.user.employee_id;
       const empRes = await db.query(
-        `SELECT e.employee_id, e.employee_code, e.full_name, e.email, e.phone, e.department, e.designation, e.profile_photo, e.shift_start, e.shift_end, e.grace_time, e.weekly_off, o.office_name, o.address, o.latitude, o.longitude
+        `SELECT e.employee_id, e.employee_code, e.full_name, e.email, e.phone, e.department, e.designation, e.role, e.profile_photo, e.shift_start, e.shift_end, e.grace_time, e.weekly_off, o.office_name, o.address, o.latitude, o.longitude
          FROM employees e
          LEFT JOIN office_locations o ON e.office_id = o.office_id
          WHERE e.employee_id = $1`,
@@ -226,7 +243,7 @@ class AuthController {
         email: emp.email,
         phone: emp.phone,
         department: emp.department,
-        role: emp.designation,
+        role: emp.role || 'Employee',
         designation: emp.designation,
         profile_photo: emp.profile_photo,
         location_label: emp.office_name || 'Padalkar Colony',

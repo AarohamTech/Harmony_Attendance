@@ -40,6 +40,11 @@ const LoginScreen = () => {
       if (session?.token) {
         try {
           await getProfile();
+          const role = (session.role || 'Employee').trim();
+          if ((role === 'Admin' || role === 'HR' || role === 'Manager') && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
+            window.location.href = '/admin/dashboard';
+            return;
+          }
           navigation.navigate('EmployeeDashboard');
         } catch {
           // Token expired or server unreachable
@@ -59,7 +64,25 @@ const LoginScreen = () => {
     setIsSubmitting(true);
 
     try {
-      await login(credential.trim(), password.trim() || undefined);
+      const session = await login(credential.trim(), password.trim() || undefined);
+      const role = (session.role || 'Employee').trim();
+
+      if (role === 'Admin' || role === 'HR' || role === 'Manager') {
+        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+          localStorage.setItem('harmony_admin_token', session.token);
+          localStorage.setItem('harmony_admin_user', JSON.stringify({
+            employee_id: session.operatorId,
+            employee_code: session.employeeId,
+            full_name: session.name,
+            email: session.email,
+            role: session.role,
+            department: session.department
+          }));
+          window.location.href = '/admin/dashboard';
+          return;
+        }
+      }
+
       navigation.navigate('EmployeeDashboard');
     } catch (err: any) {
       setErrorMessage(err?.message ?? 'Unable to connect to attendance server. Please check your internet connection and try again.');

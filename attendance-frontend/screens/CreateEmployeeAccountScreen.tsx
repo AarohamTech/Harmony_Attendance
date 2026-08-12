@@ -43,7 +43,7 @@ const CreateEmployeeAccountScreen = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [department, setDepartment] = useState('');
-  const [role, setRole] = useState('Employee');
+  const [designation, setDesignation] = useState('');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -70,13 +70,14 @@ const CreateEmployeeAccountScreen = () => {
 
     try {
       setIsSubmitting(true);
+      // Public registration ALWAYS creates role = 'Employee'
       await createAccount({
         name: name.trim(),
         employeeId: employeeId.trim(),
         email: email.trim(),
         phone: phone.trim(),
         department: department.trim() || 'Engineering',
-        role: role.trim() || 'Employee',
+        role: designation.trim() || 'Employee',
         pin: pin.trim(),
       });
 
@@ -120,7 +121,7 @@ const CreateEmployeeAccountScreen = () => {
 
         <View style={styles.heroWrap}>
           <Text style={[styles.heroTitle, { color: colors.onSurface }]}>Create Employee Account</Text>
-          <Text style={[styles.heroSubtitle, { color: colors.onSurfaceVariant }]}>One-Time Registration</Text>
+          <Text style={[styles.heroSubtitle, { color: colors.onSurfaceVariant }]}>One-Time Self Registration</Text>
         </View>
 
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]}> 
@@ -199,13 +200,13 @@ const CreateEmployeeAccountScreen = () => {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>Role</Text>
+            <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>Job Title / Designation</Text>
             <View style={[styles.inputRow, { backgroundColor: colors.background, borderColor: colors.outlineVariant }]}> 
               <Ionicons name="briefcase-outline" size={18} color={colors.onSurfaceVariant} />
               <TextInput
-                value={role}
-                onChangeText={setRole}
-                placeholder="Employee"
+                value={designation}
+                onChangeText={setDesignation}
+                placeholder="e.g. Developer, Specialist"
                 placeholderTextColor={colors.outlineVariant}
                 style={[styles.input, { color: colors.onSurface }]}
               />
@@ -213,7 +214,7 @@ const CreateEmployeeAccountScreen = () => {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>Password / Demo PIN</Text>
+            <Text style={[styles.label, { color: colors.onSurfaceVariant }]}>Password / PIN</Text>
             <View style={[styles.inputRow, { backgroundColor: colors.background, borderColor: colors.outlineVariant }]}> 
               <Ionicons name="lock-closed-outline" size={18} color={colors.onSurfaceVariant} />
               <TextInput
