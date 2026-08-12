@@ -40,8 +40,8 @@ export const Register: React.FC = () => {
     setError(null);
 
     try {
-      // Public registration ALWAYS creates role = 'Employee'
-      await authApi.registerAdmin({
+      // Public self-registration calls public POST /auth/register (ALWAYS creates role = 'Employee')
+      await authApi.registerEmployee({
         full_name: formData.full_name,
         name: formData.full_name,
         employee_code: formData.employee_code,

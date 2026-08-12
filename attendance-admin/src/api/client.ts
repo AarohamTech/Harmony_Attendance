@@ -25,6 +25,12 @@ apiClient.interceptors.request.use(
   }
 );
 
+const PUBLIC_ENDPOINTS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/forgot-password',
+];
+
 // Response Interceptor: Auto-logout on 401 Unauthorized
 apiClient.interceptors.response.use(
   (response) => response,
@@ -35,10 +41,12 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('harmony_admin_user');
 
       const isLoginPath = window.location.pathname.includes('/login');
-      const isAuthLoginRequest = error.config?.url?.includes('/auth/login');
+      const isPublicEndpoint = PUBLIC_ENDPOINTS.some((endpoint) =>
+        error.config?.url?.includes(endpoint)
+      );
 
-      // Only redirect to ?expired=1 if an existing token was present, user is not on login page, and not a login attempt
-      if (hadToken && !isLoginPath && !isAuthLoginRequest) {
+      // Only redirect to ?expired=1 if an existing token was present, user is not on login path, and not a public auth endpoint
+      if (hadToken && !isLoginPath && !isPublicEndpoint) {
         window.location.href = '/admin/login?expired=1';
       }
     }

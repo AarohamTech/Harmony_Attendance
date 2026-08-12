@@ -23,6 +23,16 @@ export const authApi = {
     return response.data.employee || response.data.data || response.data;
   },
 
+  register: async (payload: Record<string, any>): Promise<any> => {
+    const response = await apiClient.post('/auth/register', payload);
+    return response.data;
+  },
+
+  registerEmployee: async (payload: Record<string, any>): Promise<any> => {
+    const response = await apiClient.post('/auth/register', payload);
+    return response.data;
+  },
+
   registerAdmin: async (payload: Record<string, any>): Promise<any> => {
     const response = await apiClient.post('/admin/employees', payload);
     return response.data;
