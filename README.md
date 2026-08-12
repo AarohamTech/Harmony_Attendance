@@ -12,7 +12,7 @@ The platform links an employee-facing cross-platform web/mobile app and an admin
 
 ### Employee Application
 
-The **Employee Web & Mobile Application** (`attendance-frontend`) is a cross-platform Expo React Native application designed for daily employee attendance and self-service HR functions.
+The **Employee Web & Mobile Application** (`attendance-frontend`) is a cross-platform Expo React Native application designed for daily employee attendance and self-service HR functions. 
 
 **Features**:
 - **Employee Login**: Secure authentication via Employee Code or Email and PIN/Password with persistent session management.
