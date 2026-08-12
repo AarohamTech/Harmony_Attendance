@@ -141,7 +141,7 @@ class AuthController {
 
       const token = jwt.sign(
         tokenPayload,
-        process.env.JWT_SECRET || 'super_secret_jwt_key_attendance_app_2026_harmony_ai',
+        process.env.JWT_SECRET || '08ce0113a09b73847b1980bb73db7bf9f62edc71b9488663bcf48bc5704f65e3cd0aa30be9aaf02b704f45f73d772c1d72260e274e9f715d0dfc392c4682c1ab',
         { expiresIn: '7d' }
       );
 

@@ -49,3 +49,9 @@ replay_pid*.log
 Thumbs.db
 .vercel
 .env*
+
+
+.env
+.env.local
+.env.production
+node_modules/
