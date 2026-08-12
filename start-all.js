@@ -62,7 +62,7 @@ setTimeout(() => {
     cwd: appDir,
     shell: true,
     stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, CI: '1', EXPO_PUBLIC_API_URL: 'https://harmony-attendance-api.vercel.app' },
+    env: { ...process.env, CI: '1', EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL || 'https://harmony-attendance-backend.vercel.app' },
   });
 
   frontendProcess.stdout.on('data', (data) => {

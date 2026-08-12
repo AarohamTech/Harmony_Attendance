@@ -90,7 +90,7 @@ export type NotificationRecord = {
 
 // Base URL resolution: Uses process.env.EXPO_PUBLIC_API_URL
 const getApiBaseUrl = () => {
-  const url = process.env.EXPO_PUBLIC_API_URL || 'https://harmony-attendance-api.vercel.app';
+  const url = process.env.EXPO_PUBLIC_API_URL || 'https://harmony-attendance-backend.vercel.app';
   return url.replace(/\/+$/, '');
 };
 

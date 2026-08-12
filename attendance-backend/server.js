@@ -22,6 +22,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  'https://harmony-attendance-frontend.vercel.app',
   'https://harmony-attendance.vercel.app',
   'http://localhost:8081',
   'http://127.0.0.1:8081',

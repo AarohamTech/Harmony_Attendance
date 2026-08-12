@@ -45,8 +45,9 @@ export type RootStackParamList = {
 
 const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [
+    'https://harmony-attendance-frontend.vercel.app',
+    'https://harmony-attendance-backend.vercel.app',
     'https://harmony-attendance.vercel.app',
-    'https://harmony-attendance-api.vercel.app',
     'http://localhost:8081',
     'harmony://',
   ],
