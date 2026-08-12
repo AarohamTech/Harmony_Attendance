@@ -30,10 +30,15 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token and trigger auth logout event if not already on login page
+      const hadToken = !!localStorage.getItem('harmony_admin_token');
       localStorage.removeItem('harmony_admin_token');
       localStorage.removeItem('harmony_admin_user');
-      if (!window.location.pathname.endsWith('/login') && !window.location.pathname.includes('/login')) {
+
+      const isLoginPath = window.location.pathname.includes('/login');
+      const isAuthLoginRequest = error.config?.url?.includes('/auth/login');
+
+      // Only redirect to ?expired=1 if an existing token was present, user is not on login page, and not a login attempt
+      if (hadToken && !isLoginPath && !isAuthLoginRequest) {
         window.location.href = '/admin/login?expired=1';
       }
     }
