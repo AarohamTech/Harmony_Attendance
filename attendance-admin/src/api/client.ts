@@ -30,10 +30,10 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token and trigger auth logout event if on an admin route
+      // Clear token and trigger auth logout event if not already on login page
       localStorage.removeItem('harmony_admin_token');
       localStorage.removeItem('harmony_admin_user');
-      if (!window.location.pathname.includes('/admin/login')) {
+      if (!window.location.pathname.endsWith('/login') && !window.location.pathname.includes('/login')) {
         window.location.href = '/admin/login?expired=1';
       }
     }

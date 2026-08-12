@@ -16,12 +16,13 @@ export const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isExpired = new URLSearchParams(location.search).get('expired') === '1';
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isExpired) {
       navigate('/admin/dashboard', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isExpired, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,10 +77,12 @@ export const Login: React.FC = () => {
 
         {/* Login Form */}
         <div className="p-8">
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-3">
-              <ShieldAlert className="w-5 h-5 shrink-0 text-rose-600 mt-0.5" />
-              <span>{error}</span>
+          {(error || isExpired) && (
+            <div className={`mb-6 p-4 rounded-xl text-sm flex items-start gap-3 ${
+              error ? 'bg-rose-50 border border-rose-200 text-rose-700' : 'bg-amber-50 border border-amber-200 text-amber-800'
+            }`}>
+              <ShieldAlert className={`w-5 h-5 shrink-0 mt-0.5 ${error ? 'text-rose-600' : 'text-amber-600'}`} />
+              <span>{error || 'Your session has expired. Please sign in again to continue.'}</span>
             </div>
           )}
 

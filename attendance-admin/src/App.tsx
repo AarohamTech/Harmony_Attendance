@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './layouts/AdminLayout';
@@ -22,12 +22,39 @@ import AdminUsers from './pages/AdminUsers';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 
+const RedirectWithQuery: React.FC<{ to: string }> = ({ to }) => {
+  const location = useLocation();
+  return <Navigate to={`${to}${location.search}`} replace />;
+};
+
 export const App: React.FC = () => {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Auth Routes */}
+          {/* Top-level Root Redirect */}
+          <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+
+          {/* Non-/admin route aliases for direct navigation compatibility */}
+          <Route path="/login" element={<RedirectWithQuery to="/admin/login" />} />
+          <Route path="/register" element={<RedirectWithQuery to="/admin/register" />} />
+          <Route path="/forgot-password" element={<RedirectWithQuery to="/admin/forgot-password" />} />
+          <Route path="/dashboard" element={<RedirectWithQuery to="/admin/dashboard" />} />
+          <Route path="/employees" element={<RedirectWithQuery to="/admin/employees" />} />
+          <Route path="/employees/:id" element={<RedirectWithQuery to="/admin/employees/:id" />} />
+          <Route path="/attendance" element={<RedirectWithQuery to="/admin/attendance" />} />
+          <Route path="/punch-records" element={<RedirectWithQuery to="/admin/punch-records" />} />
+          <Route path="/leave-requests" element={<RedirectWithQuery to="/admin/leave-requests" />} />
+          <Route path="/missed-punch-requests" element={<RedirectWithQuery to="/admin/missed-punch-requests" />} />
+          <Route path="/departments" element={<RedirectWithQuery to="/admin/departments" />} />
+          <Route path="/offices" element={<RedirectWithQuery to="/admin/offices" />} />
+          <Route path="/notifications" element={<RedirectWithQuery to="/admin/notifications" />} />
+          <Route path="/reports" element={<RedirectWithQuery to="/admin/reports" />} />
+          <Route path="/admin-users" element={<RedirectWithQuery to="/admin/admin-users" />} />
+          <Route path="/profile" element={<RedirectWithQuery to="/admin/profile" />} />
+          <Route path="/settings" element={<RedirectWithQuery to="/admin/settings" />} />
+
+          {/* Primary Public Auth Routes */}
           <Route path="/admin/login" element={<Login />} />
           <Route path="/admin/register" element={<Register />} />
           <Route path="/admin/forgot-password" element={<ForgotPassword />} />
@@ -59,7 +86,7 @@ export const App: React.FC = () => {
           </Route>
 
           {/* Root Fallback */}
-          <Route path="*" element={<Navigate to="/admin/login" replace />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

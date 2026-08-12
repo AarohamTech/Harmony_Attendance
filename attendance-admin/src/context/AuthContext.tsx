@@ -51,17 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isLoading: false,
           });
         }
-      } catch (err) {
-        // Fall back to local user if API temporary error, or clear if 401
-        const cachedUser = getStoredUser();
-        if (cachedUser && isAdminUser(cachedUser)) {
-          setAuthState({
-            token,
-            user: cachedUser,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } else {
+      } catch (err: any) {
+        // If explicitly 401 Unauthorized, token is expired/invalid, clear auth
+        if (err?.response?.status === 401) {
           clearAuthStorage();
           setAuthState({
             token: null,
@@ -69,6 +61,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isAuthenticated: false,
             isLoading: false,
           });
+        } else {
+          // Fall back to cached user if network/server temporary error
+          const cachedUser = getStoredUser();
+          if (cachedUser && isAdminUser(cachedUser)) {
+            setAuthState({
+              token,
+              user: cachedUser,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } else {
+            clearAuthStorage();
+            setAuthState({
+              token: null,
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+          }
         }
       }
     };
