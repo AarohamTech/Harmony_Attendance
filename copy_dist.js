@@ -14,10 +14,10 @@ function copyDir(src, dest) {
   }
 }
 
-copyDir('F:/Attendence/attendance-app/dist', 'F:/Attendence/attendance-apk/dist');
+copyDir('F:/Attendence/attendance-frontend/dist', 'F:/Attendence/attendance-frontend/attendance-apk/dist');
 
 // Update dist/index.html to use relative paths for Capacitor loading
-const htmlPath = 'F:/Attendence/attendance-apk/dist/index.html';
+const htmlPath = 'F:/Attendence/attendance-frontend/attendance-apk/dist/index.html';
 if (fs.existsSync(htmlPath)) {
   let content = fs.readFileSync(htmlPath, 'utf8');
   content = content.replace(/href="\//g, 'href="./');
@@ -26,4 +26,4 @@ if (fs.existsSync(htmlPath)) {
   console.log('Updated dist/index.html with relative asset URLs.');
 }
 
-console.log('Successfully copied dist assets to attendance-apk/dist');
+console.log('Successfully copied dist assets to attendance-frontend/attendance-apk/dist');

@@ -134,50 +134,28 @@ flowchart TB
 ```text
 F:\Attendence
 │
-├── attendance-app/                 # Main Web & Expo Frontend Application
+├── attendance-frontend/            # Main Web & Expo Frontend Application
 │   ├── api/
 │   │   └── client.ts               # API Client, HTTP requests, Storage management
 │   ├── assets/                     # Application visual assets and icons
 │   ├── components/
-│   │   └── BottomTabBar.tsx        # Custom Bottom Navigation Bar
 │   ├── screens/
-│   │   ├── AttendanceDetailsScreen.tsx
-│   │   ├── AttendanceHistoryScreen.tsx
-│   │   ├── AttendanceRequestsScreen.tsx
-│   │   ├── CreateEmployeeAccountScreen.tsx
-│   │   ├── EditProfileScreen.tsx
-│   │   ├── EmployeeDashboardScreen.tsx
-│   │   ├── EmployeeProfileScreen.tsx
-│   │   ├── FaceCaptureScreen.tsx
-│   │   ├── ForgotPasswordScreen.tsx
-│   │   ├── LoginScreen.tsx
-│   │   ├── NewRequestScreen.tsx
-│   │   └── NotificationsScreen.tsx
-│   ├── theme/
-│   │   └── ThemeContext.tsx        # Design tokens & color theme manager
+│   ├── theme/                      # Design tokens & color theme manager
 │   ├── App.tsx                     # Main App Component & Stack Navigation setup
 │   ├── app.json                    # Expo project configuration
 │   ├── metro.config.js             # Metro bundler web configuration
 │   └── package.json                # App dependencies & run scripts
 │
-├── attendance-service/             # Express Bridge Starter Service
-│   ├── server.js                   # Entry script redirecting to backend/server.js
+├── attendance-backend/             # Primary Express & Python Backend Directory
+│   ├── api/                        # Server API endpoints
+│   ├── config/                     # Supabase & DB connection pool
+│   ├── controllers/                # Request handlers
+│   ├── database/                   # Schema migrations & SQL
+│   ├── middleware/                 # Auth & error handling middleware
+│   ├── routes/                     # Express router definitions
+│   ├── services/                   # Face verification & business logic
+│   ├── server.js                   # Node.js Express server entrypoint
 │   └── package.json
-│
-├── attendance-apk/                 # Native Android Build Configuration
-│   ├── android/                    # Native Android Studio Project (Gradle)
-│   ├── releases/                   # Output folder for generated APK files
-│   ├── src/config/api.ts           # Dynamic backend IP configuration for Android
-│   ├── capacitor.config.json       # Capacitor configuration settings
-│   └── package.json                # Capacitor CLI & Android build scripts
-│
-├── backend/                        # Primary Express & Python Backend Directory
-│   ├── app/
-│   │   ├── database.py             # Python SQLite DB connector
-│   │   ├── face_engine.py          # Python 128D face extraction implementation
-│   │   └── reports.py              # PDF, Excel, and CSV export generators
-│   ├── config/
-│   │   └── database.js             # Node.js pg Pool connection for Supabase
 │   ├── controllers/
 │   │   ├── attendanceController.js
 │   │   ├── authController.js
@@ -331,7 +309,7 @@ JWT_SECRET=your_jwt_secret_key_here
 FACE_MATCH_THRESHOLD=0.65
 ```
 
-### Frontend Environment Variables (`attendance-app/.env`)
+### Frontend Environment Variables (`attendance-frontend/.env`)
 ```env
 # API Base URL for Web Application
 EXPO_PUBLIC_API_URL=http://localhost:8000
@@ -355,19 +333,19 @@ npm install
 
 ### 2. Frontend Setup
 ```bash
-cd F:\Attendence\attendance-app
+cd F:\Attendence\attendance-frontend
 npm install
 ```
 
 ### 3. Primary Node Backend Setup
 ```bash
-cd F:\Attendence\backend
+cd F:\Attendence\attendance-backend
 npm install
 ```
 
 ### 4. Optional Python Backend Setup
 ```bash
-cd F:\Attendence\backend
+cd F:\Attendence\attendance-backend
 pip install -r requirements.txt
 ```
 
@@ -403,14 +381,14 @@ npm run dev
 
 #### 2. Expo Web Frontend (Port 8081)
 ```bash
-cd F:\Attendence\attendance-app
+cd F:\Attendence\attendance-frontend
 npm run dev
 ```
 - Expected URL: `http://localhost:8081`
 
 #### 3. Python FastAPI Analytics Backend (Optional - Port 8002)
 ```bash
-cd F:\Attendence\backend
+cd F:\Attendence\attendance-backend
 python -m uvicorn main:app --host 0.0.0.0 --port 8002 --reload
 ```
 - Expected URL: `http://localhost:8002`
@@ -553,14 +531,14 @@ node test_face_extractor.js
 
 ### Production Web Build
 ```bash
-cd F:\Attendence\attendance-app
+cd F:\Attendence\attendance-frontend
 npx expo export --platform web
 ```
-The compiled web static files are placed in `attendance-app/dist/`.
+The compiled web static files are placed in `attendance-frontend/dist/`.
 
 ### Android Production APK Build
 ```bash
-cd F:\Attendence\attendance-apk\android
+cd F:\Attendence\attendance-frontend\attendance-apk\android
 .\gradlew.bat assembleRelease
 ```
 The compiled APK file is saved to `attendance-apk/android/app/build/outputs/apk/release/app-release.apk` and copied to `attendance-apk/releases/harmony-attendance-release.apk`.
@@ -597,9 +575,9 @@ Alternatively, running `npm run dev` from the project root automatically frees l
 ## 24. DEVELOPMENT GUIDELINES
 
 - **Do Not Commit Secrets**: Keep `.env` files out of git repositories.
-- **Centralized API Config**: Perform all API requests using `attendance-app/api/client.ts`.
-- **Database Integrity**: Execute database migrations cleanly through `backend/database/schema.sql`.
-- **Maintain UI Consistency**: Reuse existing component patterns from `attendance-app/components/` and color tokens in `theme/ThemeContext.tsx`.
+- **Centralized API Config**: Perform all API requests using `attendance-frontend/api/client.ts`.
+- **Database Integrity**: Execute database migrations cleanly through `attendance-backend/database/schema.sql`.
+- **Maintain UI Consistency**: Reuse existing component patterns from `attendance-frontend/components/` and color tokens in `theme/ThemeContext.tsx`.
 
 ---
 

@@ -6,6 +6,6 @@ echo   Port: 8000
 echo   Database: Supabase PostgreSQL
 echo   Health Check: http://localhost:8000/api/health
 echo ===================================================
-cd /d "%~dp0backend"
+cd /d "%~dp0attendance-backend"
 node server.js
 pause

@@ -5,6 +5,6 @@ echo   Starting Attendance Expo React Native Frontend
 echo   Port: 8081
 echo   URL: http://localhost:8081
 echo ===================================================
-cd /d "%~dp0attendance-frontend"
+cd /d "F:\Attendence\attendance-frontend"
 npx expo start --port 8081 --web
 pause

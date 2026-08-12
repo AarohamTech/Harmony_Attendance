@@ -25,8 +25,8 @@ freePort(BACKEND_PORT);
 freePort(FRONTEND_PORT);
 
 const rootDir = __dirname;
-const backendDir = path.join(rootDir, 'backend');
-const appDir = path.join(rootDir, 'attendance-app');
+const backendDir = path.join(rootDir, 'attendance-backend');
+const appDir = path.join(rootDir, 'attendance-frontend');
 
 setTimeout(() => {
   console.log(`[INIT] Starting Backend Server (Express/Supabase) on internal port ${BACKEND_PORT}...`);
@@ -62,7 +62,7 @@ setTimeout(() => {
     cwd: appDir,
     shell: true,
     stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, CI: '1', EXPO_PUBLIC_API_URL: 'http://localhost:8000' },
+    env: { ...process.env, CI: '1', EXPO_PUBLIC_API_URL: 'https://harmony-attendance-api.vercel.app' },
   });
 
   frontendProcess.stdout.on('data', (data) => {
