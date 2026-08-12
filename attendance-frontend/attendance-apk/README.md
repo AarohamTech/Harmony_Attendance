@@ -10,7 +10,7 @@ Production-ready dual build configuration for **Harmony AI Attendance** featurin
 - **Location**: `frontend/` & `frontend/existing-web-app/`
 - **Start Command**: `run_frontend.bat` (or `npm run web` inside `frontend`)
 - **Web URL**: `http://localhost:8081`
-- **Backend Connection**: `http://localhost:8000` (or `http://172.20.10.3:8000`)
+- **Backend Connection**: `https://harmony-attendance-backend.vercel.app`
 
 ### 2. Native Android Application (APK)
 - **Location**: `attendance-apk/`
@@ -34,8 +34,7 @@ Production-ready dual build configuration for **Harmony AI Attendance** featurin
 
 ## ⚡ Backend & Database Single Source of Truth
 
-- **Backend API**: Node.js Express server running on port `8000` (`backend/server.js`)
-- **Host IP for Mobile/Android**: `http://172.20.10.3:8000` (Configurable via `src/config/api.ts` or `EXPO_PUBLIC_API_URL` / `VITE_API_BASE_URL`)
+- **Backend API**: Deployed Vercel API (`https://harmony-attendance-backend.vercel.app`)
 - **Database**: Supabase PostgreSQL database (`db.hgtwhgnschadrwhtimne.supabase.co`)
 
 ---
@@ -47,7 +46,7 @@ The Android application requests the following native permissions configured in 
 - `android.permission.CAMERA`
 - `android.permission.READ_EXTERNAL_STORAGE` / `WRITE_EXTERNAL_STORAGE`
 - `android.permission.READ_MEDIA_IMAGES`
-- Cleartext HTTP traffic enabled for local development backend IPs (`http://172.20.10.3:8000`) via `network_security_config.xml`.
+- Network security configured for production API (`https://harmony-attendance-backend.vercel.app`).
 
 ---
 

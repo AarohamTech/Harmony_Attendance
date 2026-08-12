@@ -88,7 +88,7 @@ export type NotificationRecord = {
   unread: boolean;
 };
 
-// Base URL resolution: Uses process.env.EXPO_PUBLIC_API_URL
+// Base URL resolution: Production Vercel Backend
 const getApiBaseUrl = () => {
   const url = process.env.EXPO_PUBLIC_API_URL || 'https://harmony-attendance-backend.vercel.app';
   return url.replace(/\/+$/, '');
@@ -128,26 +128,7 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     });
   } catch (netErr: any) {
     console.error(`[API FETCH ERROR] Request to ${url} failed:`, netErr);
-    
-    // Retry fallback between localhost and 127.0.0.1 if absolute URL was used
-    let fallbackUrl = url;
-    if (url.includes('localhost')) {
-      fallbackUrl = url.replace('localhost', '127.0.0.1');
-    } else if (url.includes('127.0.0.1')) {
-      fallbackUrl = url.replace('127.0.0.1', 'localhost');
-    }
-
-    if (fallbackUrl !== url) {
-      try {
-        console.log(`[API FETCH RETRY] ${fallbackUrl}`);
-        response = await fetch(fallbackUrl, { ...options, headers });
-      } catch (retryErr: any) {
-        console.error(`[API FETCH RETRY ERROR] Request to ${fallbackUrl} failed:`, retryErr);
-        throw new Error('Unable to connect to attendance server. Please make sure the backend is running.');
-      }
-    } else {
-      throw new Error('Unable to connect to attendance server. Please make sure the backend is running.');
-    }
+    throw new Error('Unable to connect to attendance server. Please check your internet connection and try again.');
   }
 
   console.log(`[API FETCH RESPONSE STATUS] ${response.status} ${response.statusText}`);
@@ -155,7 +136,30 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     console.error(`[API FETCH ERROR RESPONSE]`, errorData);
-    throw new Error(errorData.message || errorData.detail || `Request failed with status ${response.status}`);
+    
+    if (response.status >= 500) {
+      throw new Error('Something went wrong. Please try again later.');
+    }
+
+    const rawMsg = errorData.message || errorData.detail || errorData.error;
+    if (
+      rawMsg &&
+      typeof rawMsg === 'string' &&
+      !rawMsg.includes('http://') &&
+      !rawMsg.includes('https://') &&
+      !rawMsg.includes('172.') &&
+      !rawMsg.includes('localhost') &&
+      !rawMsg.includes('8000') &&
+      !rawMsg.includes('server.js')
+    ) {
+      throw new Error(rawMsg);
+    }
+
+    if (response.status === 401 || response.status === 400) {
+      throw new Error(rawMsg || 'Invalid credentials or request details. Please verify and try again.');
+    }
+
+    throw new Error('Something went wrong. Please try again later.');
   }
 
   return response.json();
@@ -242,9 +246,11 @@ export const syncOfflinePunches = async () => {
 // ----------------------------------------------------------------------
 export const login = async (input: string, password?: string): Promise<Session> => {
   try {
-    const payload = input.includes('@')
-      ? { email: input.trim(), password: password || '1234' }
-      : { credential: input.trim(), password: password || '1234' };
+    const trimmedInput = input.trim();
+    const trimmedPassword = (password || '1234').trim();
+    const payload = trimmedInput.includes('@')
+      ? { email: trimmedInput, credential: trimmedInput, password: trimmedPassword, pin: trimmedPassword }
+      : { employee_code: trimmedInput, credential: trimmedInput, password: trimmedPassword, pin: trimmedPassword };
 
     const data = await apiFetch('/api/auth/login', {
       method: 'POST',
@@ -267,7 +273,7 @@ export const login = async (input: string, password?: string): Promise<Session> 
     syncOfflinePunches().catch(() => {});
     return session;
   } catch (err: any) {
-    throw new Error(err.message || 'Login failed. Please check your credentials.');
+    throw new Error(err.message || 'Unable to sign in. Please verify your credentials.');
   }
 };
 
@@ -666,9 +672,22 @@ export const createAccount = async (input: {
   role: string;
   pin: string;
 }) => {
+  const payload = {
+    name: input.name,
+    full_name: input.name,
+    employeeId: input.employeeId,
+    employee_code: input.employeeId,
+    email: input.email,
+    phone: input.phone,
+    password: input.pin,
+    pin: input.pin,
+    department: input.department,
+    designation: input.role,
+    role: input.role,
+  };
   const res = await apiFetch('/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify(input),
+    body: JSON.stringify(payload),
   });
   return res;
 };

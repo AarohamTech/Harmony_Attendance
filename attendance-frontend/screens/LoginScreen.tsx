@@ -3,6 +3,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, Activi
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { login } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -26,6 +27,7 @@ type LoginScreenNavigation = StackNavigationProp<RootStackParamList, 'Login'>;
 const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigation>();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -60,7 +62,7 @@ const LoginScreen = () => {
       await login(credential.trim(), password.trim() || undefined);
       navigation.navigate('EmployeeDashboard');
     } catch (err: any) {
-      setErrorMessage(err?.message ?? 'Unable to sign in. Please verify your credentials.');
+      setErrorMessage(err?.message ?? 'Unable to connect to attendance server. Please check your internet connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -77,8 +79,14 @@ const LoginScreen = () => {
       </View>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        style={[styles.scrollView, { overflowY: 'auto' as any }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            paddingTop: Math.max(insets.top + 16, 32),
+            paddingBottom: Math.max(insets.bottom + 24, 32),
+          },
+        ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

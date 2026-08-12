@@ -458,7 +458,7 @@ Capacitor (`@capacitor/core` version `6.2.0`) encapsulates the web client inside
 ### Configured Plugins & Capabilities
 - **`@capacitor/camera`**: Enables hardware camera access for real-time face registration and punch verification.
 - **`@capacitor/preferences`**: Provides persistent key-value storage for authentication state.
-- **Network Security Configuration**: Cleartext HTTP traffic is explicitly enabled in `AndroidManifest.xml` and `network_security_config.xml` to allow communication with local development servers (`http://172.20.10.3:8000`).
+- **Network Security Configuration**: Configured in `AndroidManifest.xml` and `network_security_config.xml` to support production HTTPS communication with `https://harmony-attendance-backend.vercel.app`.
 - **Package Identifier**: `com.harmony.aiattendance`
 
 ---
@@ -536,37 +536,42 @@ npx expo export --platform web
 ```
 The compiled web static files are placed in `attendance-frontend/dist/`.
 
-### Android Production APK Build
+
+### Synchronizing Dist to Capacitor APK Container
 ```bash
-cd F:\Attendence\attendance-frontend\attendance-apk\android
-.\gradlew.bat assembleRelease
+node copy_dist.js
+cd attendance-frontend/attendance-apk
+npx cap sync android
 ```
-The compiled APK file is saved to `attendance-apk/android/app/build/outputs/apk/release/app-release.apk` and copied to `attendance-apk/releases/harmony-attendance-release.apk`.
+
+### Building Android APK Output
+```bash
+# Debug APK
+npm run build:apk:debug
+
+# Release APK
+npm run build:apk:release
+```
+APKs generated in `attendance-frontend/attendance-apk/android/app/build/outputs/apk/`.
+
+---
+
+## 22. TESTING PROCEDURES
+
+1. **Auth Login**: Test login with valid credentials (e.g. `EMP101` / `1234`).
+2. **Account Registration**: Complete enrollment form and verify user is saved to Supabase DB.
+3. **Network Failure Simulation**: Disconnect network and verify clean error message: `"Unable to connect to attendance server. Please check your internet connection and try again."`
+4. **Biometric Face Capture**: Test camera capture and face verification.
+5. **Dashboard & Requests**: Verify attendance history rendering and request creation.
 
 ---
 
 ## 23. TROUBLESHOOTING
 
-### 1. Port 8000 or 8081 Already in Use
-If the backend or frontend fails to start due to port conflicts, execute the following commands in PowerShell to inspect and free the occupied ports:
-
-```powershell
-# Inspect Port 8000
-netstat -ano | findstr :8000
-
-# Inspect Port 8081
-netstat -ano | findstr :8081
-
-# Terminate process by PID
-taskkill /PID <PID_NUMBER> /F
-```
-Alternatively, running `npm run dev` from the project root automatically frees lingering ports prior to launch.
+### 1. Port 8000 / 8081 Already in Use
+Running `npm start` from root automatically terminates lingering process listeners on ports 8000 and 8081.
 
 ### 2. Android App Cannot Connect to Backend API
-- **Issue**: Android device fails to communicate with `http://localhost:8000`.
-- **Solution**: Android containers treat `localhost` as the device itself. Update host IP in `attendance-apk/src/config/api.ts` to your machine's local wireless/LAN IP address (e.g., `http://172.20.10.3:8000`).
-
-### 3. Database Connection Failure
 - **Issue**: API returns `500 Database connection error`.
 - **Solution**: Verify that `DATABASE_URL` in `backend/.env` is correctly populated with your Supabase PostgreSQL connection URI and that your IP is allowed.
 

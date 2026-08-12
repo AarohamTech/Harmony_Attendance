@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createAccount, login } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -35,6 +36,7 @@ type CreateEmployeeAccountScreenNavigation = StackNavigationProp<RootStackParamL
 const CreateEmployeeAccountScreen = () => {
   const navigation = useNavigation<CreateEmployeeAccountScreenNavigation>();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const [name, setName] = useState('');
   const [employeeId, setEmployeeId] = useState('');
@@ -85,7 +87,7 @@ const CreateEmployeeAccountScreen = () => {
         navigation.navigate('Login');
       }
     } catch (err: any) {
-      setErrorMessage(err?.message ?? 'Unable to create employee account.');
+      setErrorMessage(err?.message ?? 'Unable to connect to attendance server. Please check your internet connection and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +98,19 @@ const CreateEmployeeAccountScreen = () => {
       style={[styles.screen, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={true}>
+      <ScrollView
+        style={[styles.scrollView, { overflowY: 'auto' as any }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            paddingTop: Math.max(insets.top + 16, 24),
+            paddingBottom: Math.max(insets.bottom + 48, 72),
+          },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={true}
+      >
         <View style={styles.headerWrap}>
           <Pressable style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.outlineVariant }]} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={20} color={colors.primary} />
@@ -259,9 +273,9 @@ const CreateEmployeeAccountScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, height: '100%', minHeight: 0 },
-  scrollView: { flex: 1, minHeight: 0 },
-  scrollContent: { paddingHorizontal: 16, paddingTop: 18, paddingBottom: 60, flexGrow: 1 },
+  screen: { flex: 1, height: '100%', minHeight: 0, width: '100%' },
+  scrollView: { flex: 1, minHeight: 0, width: '100%' },
+  scrollContent: { paddingHorizontal: 16, flexGrow: 1 },
   headerWrap: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 18 },
   iconButton: { width: 40, height: 40, borderRadius: 999, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '700' },

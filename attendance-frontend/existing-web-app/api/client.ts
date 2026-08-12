@@ -88,7 +88,7 @@ export type NotificationRecord = {
   unread: boolean;
 };
 
-// Base URL resolution: Uses process.env.EXPO_PUBLIC_API_URL
+// Base URL resolution: Production Vercel Backend
 const getApiBaseUrl = () => {
   const url = process.env.EXPO_PUBLIC_API_URL || 'https://harmony-attendance-backend.vercel.app';
   return url.replace(/\/+$/, '');
@@ -128,26 +128,7 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     });
   } catch (netErr: any) {
     console.error(`[API FETCH ERROR] Request to ${url} failed:`, netErr);
-    
-    // Retry fallback between localhost and 127.0.0.1
-    let fallbackUrl = url;
-    if (url.includes('localhost')) {
-      fallbackUrl = url.replace('localhost', '127.0.0.1');
-    } else if (url.includes('127.0.0.1')) {
-      fallbackUrl = url.replace('127.0.0.1', 'localhost');
-    }
-
-    if (fallbackUrl !== url) {
-      try {
-        console.log(`[API FETCH RETRY] ${fallbackUrl}`);
-        response = await fetch(fallbackUrl, { ...options, headers });
-      } catch (retryErr: any) {
-        console.error(`[API FETCH RETRY ERROR] Request to ${fallbackUrl} failed:`, retryErr);
-        throw new Error(`Unable to connect to attendance server (${url}). Please ensure backend (node server.js) is running on port 8000.`);
-      }
-    } else {
-      throw new Error(`Unable to connect to attendance server (${url}). Please ensure backend (node server.js) is running on port 8000.`);
-    }
+    throw new Error('Unable to connect to attendance server. Please check your internet connection and try again.');
   }
 
   console.log(`[API FETCH RESPONSE STATUS] ${response.status} ${response.statusText}`);
@@ -155,7 +136,30 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     console.error(`[API FETCH ERROR RESPONSE]`, errorData);
-    throw new Error(errorData.message || errorData.detail || `Request failed with status ${response.status}`);
+
+    if (response.status >= 500) {
+      throw new Error('Something went wrong. Please try again later.');
+    }
+
+    const rawMsg = errorData.message || errorData.detail || errorData.error;
+    if (
+      rawMsg &&
+      typeof rawMsg === 'string' &&
+      !rawMsg.includes('http://') &&
+      !rawMsg.includes('https://') &&
+      !rawMsg.includes('172.') &&
+      !rawMsg.includes('localhost') &&
+      !rawMsg.includes('8000') &&
+      !rawMsg.includes('server.js')
+    ) {
+      throw new Error(rawMsg);
+    }
+
+    if (response.status === 401 || response.status === 400) {
+      throw new Error(rawMsg || 'Invalid credentials or request details. Please verify and try again.');
+    }
+
+    throw new Error('Something went wrong. Please try again later.');
   }
 
   return response.json();
