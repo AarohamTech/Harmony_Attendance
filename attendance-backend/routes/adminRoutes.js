@@ -49,4 +49,19 @@ router.get('/reports/data', authMiddleware, requireRole('Admin', 'HR', 'Manager'
 router.get('/settings', authMiddleware, requireRole('Admin', 'HR'), adminController.getSettings);
 router.put('/settings', authMiddleware, requireRole('Admin'), adminController.updateSettings);
 
+// 10. Holidays
+router.get('/holidays', authMiddleware, requireRole('Admin', 'HR', 'Manager'), adminController.getHolidays);
+router.post('/holidays', authMiddleware, requireRole('Admin', 'HR'), adminController.createHoliday);
+router.put('/holidays/:id', authMiddleware, requireRole('Admin', 'HR'), adminController.updateHoliday);
+router.delete('/holidays/:id', authMiddleware, requireRole('Admin'), adminController.deleteHoliday);
+
+// 11. Managers
+router.get('/managers', authMiddleware, requireRole('Admin', 'HR', 'Manager'), adminController.getManagers);
+router.post('/managers', authMiddleware, requireRole('Admin', 'HR'), adminController.createManager);
+router.put('/managers/:id', authMiddleware, requireRole('Admin', 'HR'), adminController.updateManager);
+router.delete('/managers/:id', authMiddleware, requireRole('Admin'), adminController.deleteManager);
+
+// 12. Notifications
+router.post('/notifications', authMiddleware, requireRole('Admin', 'HR'), adminController.sendNotification);
+
 module.exports = router;

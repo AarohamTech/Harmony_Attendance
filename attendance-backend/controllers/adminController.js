@@ -867,6 +867,119 @@ class AdminController {
       next(err);
     }
   }
+  // 12. Holidays Endpoints
+  async getHolidays(req, res, next) {
+    try {
+      const result = await db.query('SELECT * FROM holidays ORDER BY holiday_date ASC');
+      return res.status(200).json({ success: true, data: result.rows });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async createHoliday(req, res, next) {
+    try {
+      const { holiday_name, holiday_date, holiday_type } = req.body;
+      if (!holiday_name || !holiday_date) {
+        return res.status(400).json({ success: false, message: 'Holiday name and date are required.' });
+      }
+      const result = await db.query(
+        'INSERT INTO holidays (holiday_name, holiday_date, holiday_type) VALUES ($1, $2, $3) RETURNING *',
+        [holiday_name.trim(), holiday_date, holiday_type || 'National']
+      );
+      return res.status(201).json({ success: true, message: 'Holiday created successfully', data: result.rows[0] });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateHoliday(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { holiday_name, holiday_date, holiday_type } = req.body;
+      const result = await db.query(`
+        UPDATE holidays
+        SET holiday_name = COALESCE($1, holiday_name),
+            holiday_date = COALESCE($2, holiday_date),
+            holiday_type = COALESCE($3, holiday_type)
+        WHERE holiday_id = $4
+        RETURNING *
+      `, [holiday_name || null, holiday_date || null, holiday_type || null, id]);
+      return res.status(200).json({ success: true, message: 'Holiday updated successfully', data: result.rows[0] });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteHoliday(req, res, next) {
+    try {
+      const { id } = req.params;
+      await db.query('DELETE FROM holidays WHERE holiday_id = $1', [id]);
+      return res.status(200).json({ success: true, message: 'Holiday deleted successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // 13. Managers Endpoints
+  async getManagers(req, res, next) {
+    try {
+      const result = await db.query(`
+        SELECT e.employee_id, e.employee_code, e.full_name, e.email, e.phone, e.department, e.designation, e.role, e.status, e.created_at,
+               d.department_name,
+               (SELECT COUNT(*) FROM employees emp WHERE emp.department = e.department) AS team_count
+        FROM employees e
+        LEFT JOIN departments d ON e.employee_id = d.manager_id
+        WHERE e.role IN ('Manager', 'Admin', 'HR')
+        ORDER BY e.employee_id DESC
+      `);
+      return res.status(200).json({ success: true, data: result.rows });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async createManager(req, res, next) {
+    req.body.role = req.body.role || 'Manager';
+    return this.createEmployee(req, res, next);
+  }
+
+  async updateManager(req, res, next) {
+    return this.updateEmployee(req, res, next);
+  }
+
+  async deleteManager(req, res, next) {
+    return this.deleteEmployee(req, res, next);
+  }
+
+  // 14. Send System Notification Endpoint
+  async sendNotification(req, res, next) {
+    try {
+      const { employee_id, title, message, notification_type } = req.body;
+      if (!title || !message) {
+        return res.status(400).json({ success: false, message: 'Title and message are required.' });
+      }
+
+      if (employee_id) {
+        await db.query(
+          'INSERT INTO notifications (employee_id, title, message, notification_type) VALUES ($1, $2, $3, $4)',
+          [employee_id, title.trim(), message.trim(), notification_type || 'SYSTEM']
+        );
+      } else {
+        const emps = await db.query("SELECT employee_id FROM employees WHERE status = 'Active'");
+        for (const emp of emps.rows) {
+          await db.query(
+            'INSERT INTO notifications (employee_id, title, message, notification_type) VALUES ($1, $2, $3, $4)',
+            [emp.employee_id, title.trim(), message.trim(), notification_type || 'SYSTEM']
+          );
+        }
+      }
+
+      return res.status(201).json({ success: true, message: 'Notification sent successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new AdminController();

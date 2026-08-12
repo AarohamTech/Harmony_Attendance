@@ -16,4 +16,9 @@ export const notificationApi = {
     const response = await apiClient.put('/notifications/read-all');
     return response.data;
   },
+
+  sendNotification: async (data: { employee_id?: number; title: string; message: string; notification_type?: string }): Promise<any> => {
+    const response = await apiClient.post('/admin/notifications', data);
+    return response.data;
+  },
 };

@@ -15,6 +15,8 @@ import PunchRecords from './pages/PunchRecords';
 import LeaveRequests from './pages/LeaveRequests';
 import MissedPunchRequests from './pages/MissedPunchRequests';
 import Departments from './pages/Departments';
+import Managers from './pages/Managers';
+import Holidays from './pages/Holidays';
 import OfficeLocations from './pages/OfficeLocations';
 import Notifications from './pages/Notifications';
 import Reports from './pages/Reports';
@@ -45,12 +47,16 @@ export const App: React.FC = () => {
           <Route path="/attendance" element={<RedirectWithQuery to="/admin/attendance" />} />
           <Route path="/punch-records" element={<RedirectWithQuery to="/admin/punch-records" />} />
           <Route path="/leave-requests" element={<RedirectWithQuery to="/admin/leave-requests" />} />
-          <Route path="/missed-punch-requests" element={<RedirectWithQuery to="/admin/missed-punch-requests" />} />
+          <Route path="/attendance-requests" element={<RedirectWithQuery to="/admin/attendance-requests" />} />
+          <Route path="/missed-punch-requests" element={<RedirectWithQuery to="/admin/attendance-requests" />} />
           <Route path="/departments" element={<RedirectWithQuery to="/admin/departments" />} />
-          <Route path="/offices" element={<RedirectWithQuery to="/admin/offices" />} />
+          <Route path="/managers" element={<RedirectWithQuery to="/admin/managers" />} />
+          <Route path="/holidays" element={<RedirectWithQuery to="/admin/holidays" />} />
+          <Route path="/locations" element={<RedirectWithQuery to="/admin/locations" />} />
+          <Route path="/offices" element={<RedirectWithQuery to="/admin/locations" />} />
           <Route path="/notifications" element={<RedirectWithQuery to="/admin/notifications" />} />
           <Route path="/reports" element={<RedirectWithQuery to="/admin/reports" />} />
-          <Route path="/admin-users" element={<RedirectWithQuery to="/admin/admin-users" />} />
+          <Route path="/admin-users" element={<RedirectWithQuery to="/admin/managers" />} />
           <Route path="/profile" element={<RedirectWithQuery to="/admin/profile" />} />
           <Route path="/settings" element={<RedirectWithQuery to="/admin/settings" />} />
 
@@ -75,8 +81,12 @@ export const App: React.FC = () => {
             <Route path="attendance" element={<Attendance />} />
             <Route path="punch-records" element={<PunchRecords />} />
             <Route path="leave-requests" element={<LeaveRequests />} />
+            <Route path="attendance-requests" element={<MissedPunchRequests />} />
             <Route path="missed-punch-requests" element={<MissedPunchRequests />} />
             <Route path="departments" element={<Departments />} />
+            <Route path="managers" element={<Managers />} />
+            <Route path="holidays" element={<Holidays />} />
+            <Route path="locations" element={<OfficeLocations />} />
             <Route path="offices" element={<OfficeLocations />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="reports" element={<Reports />} />

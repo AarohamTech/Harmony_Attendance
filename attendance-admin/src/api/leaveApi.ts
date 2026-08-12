@@ -2,8 +2,9 @@ import apiClient from './client';
 import { AttendanceRequest } from '../types';
 
 export const leaveApi = {
-  getLeaveRequests: async (status?: string): Promise<AttendanceRequest[]> => {
-    const response = await apiClient.get('/admin/leave-requests', { params: { status } });
+  getLeaveRequests: async (statusOrParams?: string | { status?: string; type?: string }): Promise<AttendanceRequest[]> => {
+    const params = typeof statusOrParams === 'string' ? { status: statusOrParams } : statusOrParams;
+    const response = await apiClient.get('/admin/leave-requests', { params });
     return response.data.data || response.data;
   },
 

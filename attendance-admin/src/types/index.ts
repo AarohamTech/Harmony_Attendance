@@ -131,3 +131,25 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+export interface Holiday {
+  holiday_id: number;
+  holiday_name: string;
+  holiday_date: string;
+  holiday_type?: string;
+}
+
+export interface Manager {
+  employee_id: number;
+  employee_code: string;
+  full_name: string;
+  email: string;
+  phone?: string;
+  department?: string;
+  designation?: string;
+  role?: string;
+  status?: string;
+  department_name?: string;
+  team_count?: number;
+  created_at?: string;
+}

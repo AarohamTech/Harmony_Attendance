@@ -8,50 +8,51 @@ interface StatCardProps {
   color?: 'blue' | 'emerald' | 'amber' | 'rose' | 'indigo' | 'purple' | 'sky';
   subtitle?: string;
   trend?: string;
+  onClick?: () => void;
 }
 
 const colorMap = {
   blue: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-100',
-    iconBg: 'bg-blue-600 text-white',
-    valueText: 'text-blue-950',
+    bg: 'bg-white',
+    border: 'border-[#c3c6d7]/70',
+    iconBg: 'bg-[#2563eb]/10 text-[#2563eb]',
+    valueText: 'text-[#191b23]',
   },
   emerald: {
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-100',
-    iconBg: 'bg-emerald-600 text-white',
-    valueText: 'text-emerald-950',
+    bg: 'bg-white',
+    border: 'border-emerald-200/80',
+    iconBg: 'bg-emerald-50 text-emerald-600 border border-emerald-200/60',
+    valueText: 'text-emerald-700',
   },
   amber: {
-    bg: 'bg-amber-50',
-    border: 'border-amber-100',
-    iconBg: 'bg-amber-600 text-white',
-    valueText: 'text-amber-950',
+    bg: 'bg-white',
+    border: 'border-amber-200/80',
+    iconBg: 'bg-amber-50 text-amber-600 border border-amber-200/60',
+    valueText: 'text-amber-700',
   },
   rose: {
-    bg: 'bg-rose-50',
-    border: 'border-rose-100',
-    iconBg: 'bg-rose-600 text-white',
-    valueText: 'text-rose-950',
+    bg: 'bg-white',
+    border: 'border-rose-200/80',
+    iconBg: 'bg-rose-50 text-rose-600 border border-rose-200/60',
+    valueText: 'text-rose-700',
   },
   indigo: {
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-100',
-    iconBg: 'bg-indigo-600 text-white',
-    valueText: 'text-indigo-950',
+    bg: 'bg-white',
+    border: 'border-indigo-200/80',
+    iconBg: 'bg-indigo-50 text-indigo-600 border border-indigo-200/60',
+    valueText: 'text-indigo-900',
   },
   purple: {
-    bg: 'bg-purple-50',
-    border: 'border-purple-100',
-    iconBg: 'bg-purple-600 text-white',
-    valueText: 'text-purple-950',
+    bg: 'bg-white',
+    border: 'border-purple-200/80',
+    iconBg: 'bg-purple-50 text-purple-600 border border-purple-200/60',
+    valueText: 'text-purple-900',
   },
   sky: {
-    bg: 'bg-sky-50',
-    border: 'border-sky-100',
-    iconBg: 'bg-sky-600 text-white',
-    valueText: 'text-sky-950',
+    bg: 'bg-white',
+    border: 'border-sky-200/80',
+    iconBg: 'bg-sky-50 text-sky-600 border border-sky-200/60',
+    valueText: 'text-sky-900',
   },
 };
 
@@ -62,22 +63,32 @@ export const StatCard: React.FC<StatCardProps> = ({
   color = 'blue',
   subtitle,
   trend,
+  onClick,
 }) => {
   const styles = colorMap[color] || colorMap.blue;
 
   return (
-    <div className={`bg-white border ${styles.border} rounded-2xl p-5 shadow-xs hover:shadow-md transition-all`}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{title}</span>
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${styles.iconBg} shadow-xs`}>
+    <div
+      onClick={onClick}
+      className={`bg-white border ${styles.border} rounded-3xl p-5 shadow-xs hover:shadow-md transition-all ${
+        onClick ? 'cursor-pointer hover:border-[#2563eb]' : ''
+      }`}
+    >
+      <div className="flex items-center justify-between mb-2.5">
+        <span className="text-[11px] font-extrabold text-[#434655] uppercase tracking-wider">{title}</span>
+        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${styles.iconBg} shadow-xs`}>
           <Icon className="w-5 h-5" />
         </div>
       </div>
       <div className="flex items-baseline justify-between">
-        <h3 className={`text-2xl font-bold ${styles.valueText}`}>{value}</h3>
-        {trend && <span className="text-xs font-medium text-slate-500">{trend}</span>}
+        <h3 className={`text-2xl lg:text-3xl font-extrabold ${styles.valueText}`}>{value}</h3>
+        {trend && (
+          <span className="text-xs font-extrabold px-2 py-0.5 rounded-full bg-[#ededf9] text-[#2563eb]">
+            {trend}
+          </span>
+        )}
       </div>
-      {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-xs font-semibold text-[#434655] mt-1.5">{subtitle}</p>}
     </div>
   );
 };
