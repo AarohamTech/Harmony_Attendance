@@ -1,7 +1,7 @@
 # Harmony AI Attendance System
 
 ## Overview
-
+                          
 **Harmony AI Attendance System** is an enterprise-grade biometric attendance and Human Resource Management System (HRMS) platform. It provides a complete workforce management ecosystem allowing employees to record face-verified attendance, manage personal profiles, view clocking histories, and submit leave or missed-punch adjustment requests. Concurrently, it empowers administrators, HR personnel, and team managers with a robust, role-authorized Admin Dashboard to oversee staff attendance, evaluate leave applications, configure department shifts, manage office geofences, broadcast notifications, and generate comprehensive HR reports.
 
 The platform links an employee-facing cross-platform web/mobile app and an administrative Vite dashboard with a high-performance Express REST API backend backed by a Supabase PostgreSQL database.
